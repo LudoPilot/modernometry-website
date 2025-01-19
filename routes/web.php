@@ -55,14 +55,11 @@ Route::delete('blog/articles/{article}/delete', [BlogController::class, 'destroy
 
 
 // Page À propos
-Route::get('/about', function() {
-	return view('about');
-});
+// Route::get('/about', function() {
+// 	return view('about');
+// });
 
 // Politique de confidentialité et mentions légales
-Route::get('/politique-de-confidentialite')->name();
-Route::get('/mentions-legales')->name();
-
 Route::get('/mentions-legales', function () {
     return inertia('Legal'); // Page Mentions légales
 })->name('legal');
