@@ -3,7 +3,12 @@
 		<h1>Contact</h1>
 		<p>Contactez-moi</p>
 
-		<form>
+		<form
+			id="contactForm"
+			@submit="checkForm"
+			action=""
+			method="post"
+		>
 			<!--TODO : mettre des placeholders ou des floating labels / Ajouter Regex ou autres sécurités -->
 			<div>
 				<label for="">Nom</label>
