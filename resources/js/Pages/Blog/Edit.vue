@@ -1,5 +1,7 @@
 <script setup>
 import { useForm, Link } from '@inertiajs/vue3'
+import ConfirmModal from '@/Components/ConfirmModal.vue'
+import { ref } from 'vue'
 
 const props = defineProps({
   article: {
@@ -15,6 +17,13 @@ const form = useForm({
 
 const submit = () => {
   form.patch(route('blog.articles.update', props.article.id))
+}
+
+// gestion de la modale
+const showDeleteModal = ref(false)
+const confirmDelete = () => {
+  form.delete(route('blog.articles.destroy', props.article.id))
+  showDeleteModal.value = false
 }
 </script>
 
@@ -65,20 +74,22 @@ const submit = () => {
       </div>
     </form>
 
-    <!-- Bouton supprimer -->
-    <div class="mt-10">
-      <form
-        method="post"
-        :action="route('blog.articles.destroy', article.id)"
-        @submit.prevent="() => form.delete(route('blog.articles.destroy', article.id))"
-      >
-        <button
-          type="submit"
-          class="text-red-600 underline hover:text-red-800"
-        >
-          Supprimer cet article
-        </button>
-      </form>
-    </div>
   </div>
+    
+  <!-- Bouton supprimer -->
+	<button
+	@click="showDeleteModal = true"
+	class="text-red-600 underline hover:text-red-800"
+	>
+	Supprimer cet article
+	</button>
+	
+  <!-- Modal -->
+  <ConfirmModal
+    :show="showDeleteModal"
+    title="Supprimer l'article"
+    message="Êtes-vous sûr de vouloir supprimer cet article ? Cette action est définitive."
+    @close="showDeleteModal = false"
+    @confirm="confirmDelete"
+  />
 </template>

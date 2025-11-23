@@ -10,9 +10,14 @@
 			method="post"
 		>
 			<!--TODO : mettre des placeholders ou des floating labels / Ajouter Regex ou autres sécurités -->
+			<div class="form-group mb-3">
+				<label :for="label">{{ label }}</label>
+				<input type="text" name="" id="" class="form-control" :class="{ 'is-invalid': error }" :name="label" :placeholder="placeholder" :value="modelValue" @input="onInput">
+			</div>
+
+			<!-- Message d'erreur-->
 			<div>
-				<label for="">Nom</label>
-				<input type="text" name="" id="">
+				<small class="text-danger">{{ error }}</small>
 			</div>
 
 			<div>
@@ -38,7 +43,26 @@
 				<label for="newsletterSubscription">S'abonner à la newsletter ?</label>
 			</div>
 
-			<button type="submit"></button>
+			<button type="submit" @click="submit"></button>
 		</form>
 	</div>
 </template>
+
+<script setup>
+	const props = defineProps({
+		label: String,
+		type: {
+			type: String,
+			default: 'text',
+		},
+		modelValue: String,
+		placeholder: String, 
+		error: String,
+	});
+
+	const emit = defineEmits(['update:modelValue']);
+
+	const onInput = ($event) => {
+		emit('update:modelValue', $event.target.value);
+	};
+</script>
