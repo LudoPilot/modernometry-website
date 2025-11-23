@@ -9,9 +9,13 @@ class BlogController extends Controller
 {
 	public function index()
 	{
-		Article::all();
+		$articles = Article::all();
+		//$articles = Article::latest()->get();
 
-		return inertia('Blog/');
+
+		return inertia('Blog/Index', [
+			'articles' => $articles,
+		]);
 	}
 
     public function create()
@@ -20,7 +24,7 @@ class BlogController extends Controller
 	}
 
 	public function store(Request $request) {
-		$validated = $request->valdiate([
+		$validated = $request->validate([
 			'title' => 'required|string|max:255',
 			'content' => 'required|string'
 		]);

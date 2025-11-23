@@ -1,9 +1,11 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
-use Illuminate\Foundation\Application;
-use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\Route;
+use Illuminate\Foundation\Application;
+use App\Http\Controllers\BlogController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\TutorialController; 
 
 /*
 |--------------------------------------------------------------------------
@@ -36,9 +38,9 @@ Route::middleware('auth')->group(function () {
 });
 
 // Autres routes (modifier pour avoir une structure Inertia)
-Route::get('/', [HomepageController::class, 'index'])->name('homepage.index');
+//Route::get('/', [HomepageController::class, 'index'])->name('homepage.index');
 
-Route::get('/tutoriels', [TutorialController::class, 'index'])->name('tutorials.index');
+Route::get('/tutorials', [TutorialController::class, 'index'])->name('tutorials.index');
 Route::get('/tutorials/{id}', [TutorialController::class, 'show'])->name('tutorials.show');
 Route::get('/tutorials/{id}/edit', [TutorialController::class, 'edit'])->name('tutorials.edit'); // rendre cette route privée plus tard
 Route::delete('/tutorials/{id}/delete', [TutorialController::class, 'destroy'])->name('tutorials.destroy'); // rendre cette route privée plus tard
@@ -46,18 +48,35 @@ Route::delete('/tutorials/{id}/delete', [TutorialController::class, 'destroy'])-
 
 
 // Pages Blog
-Route::get('/blog', [BlogController::class, 'index'])->name('blog.index');
-Route::get('/blog/articles', [BlogController::class, 'articles'])->name('blog.articles');
-Route::get('blog/articles/{article}', [BlogController::class, 'show'])->name('articles.show');
-Route::get('blog/articles/{article}/edit', [BlogController::class, 'edit'])->name('articles.edit');
-Route::patch('blog/articles/{article}/edit', [BlogController::class, 'update'])->name('articles.update');
-Route::delete('blog/articles/{article}/delete', [BlogController::class, 'destroy'])->name('articles.destroy');
+
+// Route::get('/blog', [BlogController::class, 'index'])->name('blog.index');
+// // Route::get('/blog/articles', [BlogController::class, 'articles'])->name('blog.articles'); // à supprimer
+// Route::get('blog/articles/create', [BlogController::class, 'create'])->name('articles.create');
+// Route::post('blog/articles', [BlogController::class, 'store'])->name('articles.store');
+// Route::get('blog/articles/{article}', [BlogController::class, 'show'])->name('articles.show');
+// Route::get('blog/articles/{article}/edit', [BlogController::class, 'edit'])->name('articles.edit');
+// Route::patch('blog/articles/{article}/edit', [BlogController::class, 'update'])->name('articles.update');
+// Route::delete('blog/articles/{article}/delete', [BlogController::class, 'destroy'])->name('articles.destroy');
+
+Route::prefix('blog')->name('blog.')->group(function () {
+    Route::get('/', [BlogController::class, 'index'])->name('index');
+
+    Route::middleware('auth')->group(function () {
+        Route::get('/articles/create', [BlogController::class, 'create'])->name('articles.create');
+        Route::post('/articles', [BlogController::class, 'store'])->name('articles.store');
+        Route::get('/articles/{article}/edit', [BlogController::class, 'edit'])->name('articles.edit');
+        Route::patch('/articles/{article}', [BlogController::class, 'update'])->name('articles.update');
+        Route::delete('/articles/{article}', [BlogController::class, 'destroy'])->name('articles.destroy');
+    });
+
+    Route::get('/articles/{article}', [BlogController::class, 'show'])->name('articles.show');
+});
 
 
 // Page À propos
-// Route::get('/about', function() {
-// 	return view('about');
-// });
+Route::get('/about', function() {
+	return view('about');
+});
 
 // Politique de confidentialité et mentions légales
 Route::get('/mentions-legales', function () {
