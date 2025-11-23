@@ -1,4 +1,5 @@
 <script setup>
+import AppLayout from '@/Layouts/AppLayout.vue'
 import { useForm, Link } from '@inertiajs/vue3'
 
 const form = useForm({
@@ -12,6 +13,7 @@ const submit = () => {
 </script>
 
 <template>
+  <AppLayout>
   <div class="max-w-3xl mx-auto p-6">
     <h1 class="text-3xl font-bold mb-6">Créer un nouvel article</h1>
 
@@ -64,4 +66,5 @@ const submit = () => {
       </div>
     </form>
   </div>
+  </AppLayout>
 </template>

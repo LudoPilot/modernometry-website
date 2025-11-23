@@ -1,6 +1,7 @@
 <script setup>
 import { useForm, Link } from '@inertiajs/vue3'
 import ConfirmModal from '@/Components/ConfirmModal.vue'
+import AppLayout from '@/Layouts/AppLayout.vue'
 import { ref } from 'vue'
 
 const props = defineProps({
@@ -28,6 +29,7 @@ const confirmDelete = () => {
 </script>
 
 <template>
+  <AppLayout>
   <div class="max-w-3xl mx-auto p-6">
     <h1 class="text-3xl font-bold mb-6">Modifier l'article</h1>
 
@@ -92,4 +94,5 @@ const confirmDelete = () => {
     @close="showDeleteModal = false"
     @confirm="confirmDelete"
   />
+  </AppLayout>
 </template>

@@ -1,4 +1,5 @@
 <script setup>
+import AppLayout from '@/Layouts/AppLayout.vue';
 import { Link } from '@inertiajs/vue3'
 
 defineProps({
@@ -10,6 +11,7 @@ defineProps({
 </script>
 
 <template>
+  <AppLayout>
   <div class="max-w-3xl mx-auto p-6">
     <!-- Titre -->
     <h1 class="text-4xl font-bold mb-4">
@@ -46,4 +48,5 @@ defineProps({
       </Link>
     </div>
   </div>
+  </AppLayout>
 </template>
