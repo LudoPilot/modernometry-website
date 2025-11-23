@@ -1,26 +1,34 @@
 <script setup>
 import { Link, usePage } from '@inertiajs/vue3'
-import { ref, watch } from 'vue'
+import { ref, watch, onMounted } from 'vue'
 
 // Heroicons
-import { Bars3Icon, XMarkIcon } from '@heroicons/vue/24/outline'
+import { Bars3Icon, XMarkIcon, UserCircleIcon, ChevronDownIcon } from '@heroicons/vue/24/outline'
 
-// Flash messages (toasts plus tard)
 const page = usePage()
 
-watch(
-  () => page.props.flash,
-  flash => {
-    if (flash?.success) {
-      console.log('FLASH:', flash.success)
-    }
-  },
-  { deep: true }
-)
-
-// état du menu mobile
+// Menu mobile
 const mobileOpen = ref(false)
-const toggleMobileMenu = () => mobileOpen.value = !mobileOpen.value
+const toggleMobileMenu = () => (mobileOpen.value = !mobileOpen.value)
+
+// Dropdown utilisateur
+const userMenuOpen = ref(false)
+
+const toggleUserMenu = () => {
+  userMenuOpen.value = !userMenuOpen.value
+}
+
+// Ferme le dropdown en cliquant ailleurs
+onMounted(() => {
+  window.addEventListener('click', e => {
+    const dropdown = document.getElementById('user-dropdown')
+    const button = document.getElementById('user-menu-button')
+
+    if (dropdown && !dropdown.contains(e.target) && !button.contains(e.target)) {
+      userMenuOpen.value = false
+    }
+  })
+})
 </script>
 
 <template>
@@ -37,34 +45,65 @@ const toggleMobileMenu = () => mobileOpen.value = !mobileOpen.value
             Modernometry
           </Link>
 
-          <!-- Menu desktop -->
+          <!-- MENU DESKTOP -->
           <div class="hidden md:flex items-center space-x-6">
 
-            <Link :href="route('blog.index')" class="navlink">
-              Blog
-            </Link>
+            <Link :href="route('blog.index')" class="navlink">Blog</Link>
+            <Link :href="route('tutorials.index')" class="navlink">Tutoriels</Link>
+            <Link :href="route('contact.index')" class="navlink">Contact</Link>
 
-            <Link :href="route('tutorials.index')" class="navlink">
-              Tutoriels
-            </Link>
+            <!-- Dropdown utilisateur -->
+            <div v-if="page.props.auth.user" class="relative">
+              <button
+                id="user-menu-button"
+                @click.stop="toggleUserMenu"
+                class="flex items-center space-x-2 px-3 py-1 rounded hover:bg-gray-100"
+              >
+                <UserCircleIcon class="h-6 w-6 text-gray-700" />
+                <span>{{ page.props.auth.user.name }}</span>
+                <ChevronDownIcon class="h-4 w-4 text-gray-600" />
+              </button>
 
-            <Link :href="route('contact.index')" class="navlink">
-              Contact
-            </Link>
+              <!-- MENU -->
+              <div
+                id="user-dropdown"
+                v-if="userMenuOpen"
+                class="absolute right-0 mt-2 w-48 bg-white border shadow-lg rounded-lg py-2 z-50"
+              >
+                <Link
+                  :href="route('profile.edit')"
+                  class="dropdown-item"
+                >
+                  Mon profil
+                </Link>
 
-            <Link :href="route('dashboard')" v-if="page.props.auth.user" class="navlink">
-              Dashboard
-            </Link>
+                <Link
+                  :href="route('dashboard')"
+                  class="dropdown-item"
+                >
+                  Tableau de bord
+                </Link>
 
+                <form :action="route('logout')" method="post">
+                  <input type="hidden" name="_token" :value="page.props.csrf_token" />
+                  <button class="dropdown-item w-full text-left">
+                    Déconnexion
+                  </button>
+                </form>
+              </div>
+            </div>
+
+            <!-- Si non connecté -->
             <Link href="/login" v-else class="navlink">
               Connexion
             </Link>
+
           </div>
 
           <!-- BOUTON MOBILE -->
           <button
             class="md:hidden p-2 rounded hover:bg-gray-100"
-            @click="toggleMobileMenu"
+            @click="mobileOpen = !mobileOpen"
           >
             <Bars3Icon v-if="!mobileOpen" class="h-6 w-6 text-gray-800" />
             <XMarkIcon v-else class="h-6 w-6 text-gray-800" />
@@ -77,23 +116,35 @@ const toggleMobileMenu = () => mobileOpen.value = !mobileOpen.value
       <div v-if="mobileOpen" class="md:hidden bg-white border-t shadow-sm">
         <div class="px-4 py-3 space-y-3 flex flex-col">
 
-          <Link :href="route('blog.index')" class="navlink-mobile">
-            Blog
-          </Link>
+          <Link :href="route('blog.index')" class="navlink-mobile">Blog</Link>
+          <Link :href="route('tutorials.index')" class="navlink-mobile">Tutoriels</Link>
+          <Link :href="route('contact.index')" class="navlink-mobile">Contact</Link>
 
-          <Link :href="route('tutorials.index')" class="navlink-mobile">
-            Tutoriels
-          </Link>
+          <!-- Infos utilisateur -->
+          <div v-if="page.props.auth.user" class="border-t pt-3">
 
-          <Link :href="route('contact.index')" class="navlink-mobile">
-            Contact
-          </Link>
+            <div class="flex items-center space-x-2 mb-2">
+              <UserCircleIcon class="h-6 w-6 text-gray-600" />
+              <span class="font-medium">{{ page.props.auth.user.name }}</span>
+            </div>
 
-          <Link :href="route('dashboard')" v-if="page.props.auth.user" class="navlink-mobile">
-            Dashboard
-          </Link>
+            <Link :href="route('profile.edit')" class="navlink-mobile">
+              Mon profil
+            </Link>
 
-          <Link href="/login" v-else class="navlink-mobile">
+            <Link :href="route('dashboard')" class="navlink-mobile">
+              Tableau de bord
+            </Link>
+
+            <form :action="route('logout')" method="post">
+              <input type="hidden" name="_token" :value="page.props.csrf_token" />
+              <button class="navlink-mobile text-left w-full">
+                Déconnexion
+              </button>
+            </form>
+          </div>
+
+          <Link v-else href="/login" class="navlink-mobile">
             Connexion
           </Link>
 
@@ -102,14 +153,13 @@ const toggleMobileMenu = () => mobileOpen.value = !mobileOpen.value
 
     </nav>
 
-    <!-- CONTENU PRINCIPAL -->
+    <!-- CONTENU PRINCIPAL-->
     <main class="flex-1 py-8">
       <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         <slot />
       </div>
     </main>
 
-    <!-- FOOTER -->
     <footer class="bg-white border-t py-4 text-center text-gray-600 text-sm">
       © {{ new Date().getFullYear() }} — Modernometry. Tous droits réservés.
     </footer>
@@ -124,5 +174,9 @@ const toggleMobileMenu = () => mobileOpen.value = !mobileOpen.value
 
 .navlink-mobile {
   @apply block text-gray-800 text-lg font-medium hover:text-black transition;
+}
+
+.dropdown-item {
+  @apply block px-4 py-2 text-gray-700 hover:bg-gray-100;
 }
 </style>
