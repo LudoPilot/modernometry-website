@@ -3,7 +3,30 @@ import { Link, usePage } from '@inertiajs/vue3'
 import { ref, watch, onMounted } from 'vue'
 
 // Heroicons
-import { Bars3Icon, XMarkIcon, UserCircleIcon, ChevronDownIcon } from '@heroicons/vue/24/outline'
+import { Bars3Icon, XMarkIcon, UserCircleIcon, ChevronDownIcon, SunIcon, MoonIcon } from '@heroicons/vue/24/outline'
+
+// Light mode / dark mode
+const theme = ref('light')
+const loadTheme = () => {
+  const saved = localStorage.getItem('theme')
+
+  if (saved) {
+    theme.value = saved
+  } else {
+    theme.value = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+  }
+
+  document.documentElement.classList.toggle('dark', theme.value === 'dark')
+}
+
+const toggleTheme = () => {
+  theme.value = theme.value === 'dark' ? 'light' : 'dark'
+  document.documentElement.classList.toggle('dark', theme.value === 'dark')
+  localStorage.setItem('theme', theme.value)
+}
+
+onMounted(() => loadTheme())
+
 
 const page = usePage()
 
@@ -32,10 +55,9 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="min-h-screen flex flex-col bg-gray-50">
-
+  <div class="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200">
     <!-- NAVBAR -->
-    <nav class="bg-white shadow-sm">
+	<nav class="bg-white dark:bg-gray-800 shadow-sm">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
         <div class="flex justify-between h-16 items-center">
@@ -51,6 +73,15 @@ onMounted(() => {
             <Link :href="route('blog.index')" class="navlink">Blog</Link>
             <Link :href="route('tutorials.index')" class="navlink">Tutoriels</Link>
             <Link :href="route('contact.index')" class="navlink">Contact</Link>
+
+			<!-- Dark mode toggle -->
+			<button
+			@click="toggleTheme"
+			class="p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700"
+			>
+			<SunIcon v-if="theme === 'dark'" class="w-6 h-6 text-yellow-400" />
+			<MoonIcon v-else class="w-6 h-6 text-gray-700" />
+			</button>
 
             <!-- Dropdown utilisateur -->
             <div v-if="page.props.auth.user" class="relative">
@@ -105,20 +136,41 @@ onMounted(() => {
             class="md:hidden p-2 rounded hover:bg-gray-100"
             @click="mobileOpen = !mobileOpen"
           >
-            <Bars3Icon v-if="!mobileOpen" class="h-6 w-6 text-gray-800" />
-            <XMarkIcon v-else class="h-6 w-6 text-gray-800" />
+			<Bars3Icon v-if="!mobileOpen" class="h-6 w-6 text-gray-800 dark:text-gray-200" />
+			<XMarkIcon v-else class="h-6 w-6 text-gray-800 dark:text-gray-200" />
           </button>
 
         </div>
       </div>
 
       <!-- MENU MOBILE -->
-      <div v-if="mobileOpen" class="md:hidden bg-white border-t shadow-sm">
+	  <div v-if="mobileOpen"
+		class="md:hidden bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 shadow-sm">
+		<!-- class="md:hidden bg-white dark:bg-gray-800 border-t shadow-sm"> -->
         <div class="px-4 py-3 space-y-3 flex flex-col">
 
           <Link :href="route('blog.index')" class="navlink-mobile">Blog</Link>
           <Link :href="route('tutorials.index')" class="navlink-mobile">Tutoriels</Link>
           <Link :href="route('contact.index')" class="navlink-mobile">Contact</Link>
+
+		<button
+			@click="toggleTheme"
+			class="flex items-center space-x-3 px-1 py-1"
+		>
+			<MoonIcon
+				v-if="theme === 'light'"
+				class="w-5 h-5 text-gray-700 dark:text-gray-200"
+			/>
+			<SunIcon
+				v-else
+				class="w-5 h-5 text-yellow-400"
+			/>
+
+			<span class="text-gray-800 dark:text-gray-100 text-lg leading-none">
+				Thème
+			</span>
+		</button>
+
 
           <!-- Infos utilisateur -->
           <div v-if="page.props.auth.user" class="border-t pt-3">
@@ -159,8 +211,10 @@ onMounted(() => {
         <slot />
       </div>
     </main>
+	
 
-    <footer class="bg-white border-t py-4 text-center text-gray-600 text-sm">
+	<footer class="bg-white dark:bg-gray-800 border-t dark:border-gray-700 py-4 text-center text-gray-600 dark:text-gray-300 text-sm">
+
       © {{ new Date().getFullYear() }} — Modernometry. Tous droits réservés.
     </footer>
 
@@ -169,11 +223,11 @@ onMounted(() => {
 
 <style scoped>
 .navlink {
-  @apply text-gray-700 hover:text-black transition;
+  @apply text-gray-700 dark:text-gray-200 hover:text-black dark:hover:text-white transition;
 }
 
 .navlink-mobile {
-  @apply block text-gray-800 text-lg font-medium hover:text-black transition;
+  @apply block text-gray-800 dark:text-gray-100 text-lg font-medium hover:text-black dark:hover:text-white transition;
 }
 
 .dropdown-item {
