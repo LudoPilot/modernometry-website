@@ -1,5 +1,6 @@
 <script setup>
 import { Link, usePage } from '@inertiajs/vue3'
+import ToggleDarkMode from '@/Components/ToggleDarkMode.vue'
 import { ref, watch, onMounted } from 'vue'
 
 // Heroicons
@@ -75,13 +76,7 @@ onMounted(() => {
             <Link :href="route('contact.index')" class="navlink">Contact</Link>
 
 			<!-- Dark mode toggle -->
-			<button
-			@click="toggleTheme"
-			class="p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700"
-			>
-			<SunIcon v-if="theme === 'dark'" class="w-6 h-6 text-yellow-400" />
-			<MoonIcon v-else class="w-6 h-6 text-gray-700" />
-			</button>
+			<ToggleDarkMode />
 
             <!-- Dropdown utilisateur -->
             <div v-if="page.props.auth.user" class="relative">
@@ -153,23 +148,8 @@ onMounted(() => {
           <Link :href="route('tutorials.index')" class="navlink-mobile">Tutoriels</Link>
           <Link :href="route('contact.index')" class="navlink-mobile">Contact</Link>
 
-		<button
-			@click="toggleTheme"
-			class="flex items-center space-x-3 px-1 py-1"
-		>
-			<MoonIcon
-				v-if="theme === 'light'"
-				class="w-5 h-5 text-gray-700 dark:text-gray-200"
-			/>
-			<SunIcon
-				v-else
-				class="w-5 h-5 text-yellow-400"
-			/>
-
-			<span class="text-gray-800 dark:text-gray-100 text-lg leading-none">
-				Thème
-			</span>
-		</button>
+		  <!-- Mode sombre -->
+		  <ToggleDarkMode />
 
 
           <!-- Infos utilisateur -->
