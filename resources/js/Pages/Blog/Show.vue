@@ -27,6 +27,22 @@ defineProps({
         {{ article.content }}
       </div>
 
+	  <!-- Catégorie -->
+	<div v-if="article.category" class="text-blue-500 font-medium mb-4">
+	{{ article.category.name }}
+	</div>
+
+	<!-- Tags-->
+	<div class="flex gap-2 mb-8 flex-wrap">
+	<span
+		v-for="tag in article.tags"
+		:key="tag.id"
+		class="px-3 py-1 text-sm rounded-full bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300"
+	>
+		#{{ tag.name }}
+	</span>
+	</div>
+
       <!-- Footer actions -->
       <div class="flex items-center gap-6">
         <Link
@@ -38,7 +54,7 @@ defineProps({
 
         <Link
           v-if="$page.props.auth.user"
-          :href="route('blog.articles.edit', article.id)"
+          :href="route('blog.articles.edit', article.slug)"
           class="text-gray-700 dark:text-gray-300 hover:underline"
         >
           Modifier

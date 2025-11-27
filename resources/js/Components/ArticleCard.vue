@@ -11,7 +11,7 @@ const props = defineProps({
 
 <template>
   <Link
-    :href="route('blog.articles.show', article.id)"
+    :href="route('blog.articles.show', article.slug)"
     class="block p-5 rounded-xl border border-gray-200 dark:border-gray-700
            bg-white dark:bg-gray-800 hover:shadow-lg dark:hover:shadow-xl
            transition-all duration-200"

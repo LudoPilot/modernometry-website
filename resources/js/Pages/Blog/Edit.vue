@@ -8,12 +8,16 @@ const props = defineProps({
   article: {
     type: Object,
     required: true,
-  }
+  },
+  categories: Array,
+  tags: Array,
 })
 
 const form = useForm({
   title: props.article.title,
   content: props.article.content,
+  category_id: props.article.category_id,
+  tags: props.article.tags?.map(t => t.id) ?? [],
 })
 
 const submit = () => {
@@ -60,6 +64,34 @@ const confirmDelete = () => {
           {{ form.errors.content }}
         </div>
       </div>
+
+	  
+        <!-- Catégorie -->
+        <div>
+          <label class="block font-medium mb-1">Catégorie</label>
+          <select v-model="form.category_id"
+                  class="border rounded p-2 w-full">
+            <option :value="null">Aucune catégorie</option>
+            <option v-for="cat in categories" :key="cat.id" :value="cat.id">
+              {{ cat.name }}
+            </option>
+          </select>
+        </div>
+
+        <!-- Tags -->
+        <div>
+          <label class="block font-medium mb-2">Tags</label>
+
+          <div class="flex flex-wrap gap-3 mt-2">
+            <label v-for="tag in tags" :key="tag.id"
+                   class="flex items-center gap-2 px-3 py-1 rounded-full border
+                          cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700">
+              <input type="checkbox" :value="tag.id" v-model="form.tags" />
+              {{ tag.name }}
+            </label>
+          </div>
+        </div>
+
 
       <div class="flex items-center gap-4">
         <button

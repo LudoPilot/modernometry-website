@@ -37,7 +37,7 @@ defineProps({
         </p>
 
         <Link
-          :href="route('blog.articles.show', article.id)"
+          :href="route('blog.articles.show', article.slug)"
           class="text-blue-500 underline"
         >
           Lire l'article

@@ -31,7 +31,7 @@ Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
-Route::middleware('auth')->group(function () {
+Route::middleware([])->group(function () {	// Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
@@ -58,19 +58,35 @@ Route::delete('/tutorials/{id}/delete', [TutorialController::class, 'destroy'])-
 // Route::patch('blog/articles/{article}/edit', [BlogController::class, 'update'])->name('articles.update');
 // Route::delete('blog/articles/{article}/delete', [BlogController::class, 'destroy'])->name('articles.destroy');
 
+// Route::prefix('blog')->name('blog.')->group(function () {
+//     Route::get('/', [BlogController::class, 'index'])->name('index');
+
+//     Route::middleware('auth')->group(function () {
+//         Route::get('/articles/create', [BlogController::class, 'create'])->name('articles.create');
+//         Route::post('/articles', [BlogController::class, 'store'])->name('articles.store');
+//         Route::get('/articles/{article}/edit', [BlogController::class, 'edit'])->name('articles.edit');
+//         Route::patch('/articles/{article}', [BlogController::class, 'update'])->name('articles.update');
+//         Route::delete('/articles/{article}', [BlogController::class, 'destroy'])->name('articles.destroy');
+//     });
+
+//     Route::get('/articles/{article}', [BlogController::class, 'show'])->name('articles.show');
+// });
 Route::prefix('blog')->name('blog.')->group(function () {
+
     Route::get('/', [BlogController::class, 'index'])->name('index');
 
+    Route::get('/{article:slug}', [BlogController::class, 'show'])->name('articles.show');
+
     Route::middleware('auth')->group(function () {
+        Route::get('/{article:slug}/edit', [BlogController::class, 'edit'])->name('articles.edit');
+        Route::patch('/{article:slug}', [BlogController::class, 'update'])->name('articles.update');
+        Route::delete('/{article:slug}', [BlogController::class, 'destroy'])->name('articles.destroy');
+
         Route::get('/articles/create', [BlogController::class, 'create'])->name('articles.create');
         Route::post('/articles', [BlogController::class, 'store'])->name('articles.store');
-        Route::get('/articles/{article}/edit', [BlogController::class, 'edit'])->name('articles.edit');
-        Route::patch('/articles/{article}', [BlogController::class, 'update'])->name('articles.update');
-        Route::delete('/articles/{article}', [BlogController::class, 'destroy'])->name('articles.destroy');
     });
-
-    Route::get('/articles/{article}', [BlogController::class, 'show'])->name('articles.show');
 });
+
 
 
 // Page À propos
