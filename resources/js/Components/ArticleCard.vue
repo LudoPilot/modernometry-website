@@ -26,6 +26,17 @@ const props = defineProps({
       {{ article.content.substring(0, 140) }}…
     </p>
 
+	<!-- Catégorie -->
+	<CategoryBadge
+		v-if="article.category"
+		:category="article.category"
+	/>
+	<!-- Tags -->
+	<div class="flex gap-2 mt-2 flex-wrap">
+		<TagBadge v-for="t in article.tags" :key="t.id" :tag="t" />
+	</div>
+
+
     <!-- Footer -->
     <div class="text-sm text-gray-500 dark:text-gray-400 flex justify-between">
       <span>Publié le {{ new Date(article.created_at).toLocaleDateString() }}</span>

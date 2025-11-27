@@ -3,8 +3,10 @@
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Application;
+use App\Http\Controllers\TagController;
 use App\Http\Controllers\BlogController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\TutorialController; 
 
 /*
@@ -71,22 +73,34 @@ Route::delete('/tutorials/{id}/delete', [TutorialController::class, 'destroy'])-
 
 //     Route::get('/articles/{article}', [BlogController::class, 'show'])->name('articles.show');
 // });
+
+
 Route::prefix('blog')->name('blog.')->group(function () {
 
+    // Page principale du blog
     Route::get('/', [BlogController::class, 'index'])->name('index');
 
-    Route::get('/{article:slug}', [BlogController::class, 'show'])->name('articles.show');
+    // Catégories
+    Route::get('/category/{category:slug}', [CategoryController::class, 'show'])
+        ->name('categories.show');
 
+    // Tags (doit aussi être avant les articles)
+    Route::get('/tag/{tag:slug}', [TagController::class, 'show'])
+        ->name('tags.show');
+
+    // CRUD articles
     Route::middleware('auth')->group(function () {
+        Route::get('/articles/create', [BlogController::class, 'create'])->name('articles.create');
+        Route::post('/articles', [BlogController::class, 'store'])->name('articles.store');
+
         Route::get('/{article:slug}/edit', [BlogController::class, 'edit'])->name('articles.edit');
         Route::patch('/{article:slug}', [BlogController::class, 'update'])->name('articles.update');
         Route::delete('/{article:slug}', [BlogController::class, 'destroy'])->name('articles.destroy');
-
-        Route::get('/articles/create', [BlogController::class, 'create'])->name('articles.create');
-        Route::post('/articles', [BlogController::class, 'store'])->name('articles.store');
     });
-});
 
+    // Articles
+    Route::get('/{article:slug}', [BlogController::class, 'show'])->name('articles.show');
+});
 
 
 // Page À propos
