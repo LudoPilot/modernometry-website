@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Tag;
 use App\Models\Article;
 use App\Models\Category;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 
 class BlogController extends Controller
@@ -13,7 +14,6 @@ class BlogController extends Controller
 	{
 		$articles = Article::all();
 		//$articles = Article::latest()->get();
-
 
 		return inertia('Blog/Index', [
 			'articles' => $articles,
@@ -33,8 +33,10 @@ class BlogController extends Controller
 			'title' => 'required|string|max:255',
 			'content' => 'required|string',
     		'category_id' => 'nullable|exists:categories,id',
+
+			// tags
     		'tags' => 'array',
-    		'tags.*' => 'exists:tags,id',
+    		'tags.*' => 'string|max:50',
 		]);
 
 		$article = Article::create([
@@ -44,7 +46,28 @@ class BlogController extends Controller
 			'user_id' => auth()->id(),
 		]);
 
-		$article->tags()->sync($validated['tags'] ?? []);
+		// conversion des tags en IDs
+		if (!empty($validated['tags'])) {
+			foreach ($validated['tags'] as $tagName) {
+
+				// nettoie le tag
+				$tagName = trim($tagName);
+
+				if ($tagName === '') continue;
+
+				// création du tag si nécessaire
+				$tag = \App\Models\Tag::firstOrCreate(
+					['slug' => Str::slug($tagName)],
+					['name' => $tagName]
+				);
+
+				$tagIds[] = $tag->id;
+			}
+		}
+
+
+		// 3) Associe les tags à l'article
+		$article->tags()->sync($tagIds);
 
 		return redirect()->route('blog.index')->with('success', 'Article créé avec succès.');
 	}
@@ -63,28 +86,46 @@ class BlogController extends Controller
 		]);
 	}
 
-	public function update(Request $request, Article $article) {
+	public function update(Request $request, Article $article)
+	{
 		$validated = $request->validate([
 			'title' => 'required|string|max:255',
 			'content' => 'required|string',
 			'category_id' => 'nullable|exists:categories,id',
+
+			// liste de noms de tags
 			'tags' => 'array',
-			'tags.*' => 'exists:tags,id',
+			'tags.*' => 'string|max:50',
 		]);
 
-		unset($validated['slug']);
-
 		$article->update([
-			'title' => $validated['title'],
-			'content' => $validated['content'],
+			'title'       => $validated['title'],
+			'content'     => $validated['content'],
 			'category_id' => $validated['category_id'] ?? null,
 		]);
 
-		$article->tags()->sync($validated['tags'] ?? []);
+		$tagIds = [];
+		if (!empty($validated['tags'])) {
+			foreach ($validated['tags'] as $tagName) {
 
-		// retourner à la liste des articles
-        return redirect()->route('blog.index')
-            ->with('success', 'Article mis à jour.');
+				$tagName = trim($tagName);
+
+				if ($tagName === '') continue;
+
+				$tag = \App\Models\Tag::firstOrCreate(
+					['slug' => Str::slug($tagName)],
+					['name' => $tagName]
+				);
+
+				$tagIds[] = $tag->id;
+			}
+		}
+
+		$article->tags()->sync($tagIds);
+
+		return redirect()
+			->route('blog.articles.show', $article->slug)
+			->with('success', 'Article mis à jour.');
 	}
 
     public function destroy(Article $article)
