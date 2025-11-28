@@ -48,33 +48,7 @@ Route::get('/tutorials/{id}/edit', [TutorialController::class, 'edit'])->name('t
 Route::delete('/tutorials/{id}/delete', [TutorialController::class, 'destroy'])->name('tutorials.destroy'); // rendre cette route privée plus tard
 
 
-
-// Pages Blog
-
-// Route::get('/blog', [BlogController::class, 'index'])->name('blog.index');
-// // Route::get('/blog/articles', [BlogController::class, 'articles'])->name('blog.articles'); // à supprimer
-// Route::get('blog/articles/create', [BlogController::class, 'create'])->name('articles.create');
-// Route::post('blog/articles', [BlogController::class, 'store'])->name('articles.store');
-// Route::get('blog/articles/{article}', [BlogController::class, 'show'])->name('articles.show');
-// Route::get('blog/articles/{article}/edit', [BlogController::class, 'edit'])->name('articles.edit');
-// Route::patch('blog/articles/{article}/edit', [BlogController::class, 'update'])->name('articles.update');
-// Route::delete('blog/articles/{article}/delete', [BlogController::class, 'destroy'])->name('articles.destroy');
-
-// Route::prefix('blog')->name('blog.')->group(function () {
-//     Route::get('/', [BlogController::class, 'index'])->name('index');
-
-//     Route::middleware('auth')->group(function () {
-//         Route::get('/articles/create', [BlogController::class, 'create'])->name('articles.create');
-//         Route::post('/articles', [BlogController::class, 'store'])->name('articles.store');
-//         Route::get('/articles/{article}/edit', [BlogController::class, 'edit'])->name('articles.edit');
-//         Route::patch('/articles/{article}', [BlogController::class, 'update'])->name('articles.update');
-//         Route::delete('/articles/{article}', [BlogController::class, 'destroy'])->name('articles.destroy');
-//     });
-
-//     Route::get('/articles/{article}', [BlogController::class, 'show'])->name('articles.show');
-// });
-
-
+// Routes blog
 Route::prefix('blog')->name('blog.')->group(function () {
 
     // Page principale du blog
@@ -100,6 +74,33 @@ Route::prefix('blog')->name('blog.')->group(function () {
 
     // Articles
     Route::get('/{article:slug}', [BlogController::class, 'show'])->name('articles.show');
+});
+
+
+// Routes Admin
+Route::prefix('admin')->middleware('auth')->name('admin.')->group(function () {
+
+    Route::prefix('categories')->name('categories.')->group(function () {
+
+        Route::get('/', [\App\Http\Controllers\Admin\CategoryAdminController::class, 'index'])
+            ->name('index');
+
+        Route::get('/create', [\App\Http\Controllers\Admin\CategoryAdminController::class, 'create'])
+            ->name('create');
+
+        Route::post('/', [\App\Http\Controllers\Admin\CategoryAdminController::class, 'store'])
+            ->name('store');
+
+        Route::get('/{category}/edit', [\App\Http\Controllers\Admin\CategoryAdminController::class, 'edit'])
+            ->name('edit');
+
+        Route::patch('/{category}', [\App\Http\Controllers\Admin\CategoryAdminController::class, 'update'])
+            ->name('update');
+
+        Route::delete('/{category}', [\App\Http\Controllers\Admin\CategoryAdminController::class, 'destroy'])
+            ->name('destroy');
+    });
+
 });
 
 
