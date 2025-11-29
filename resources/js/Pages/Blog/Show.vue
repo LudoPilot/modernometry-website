@@ -29,18 +29,21 @@ defineProps({
 
 	  <!-- Catégorie -->
 	<div v-if="article.category" class="text-blue-500 font-medium mb-4">
-	{{ article.category.name }}
+		{{ article.category.name }}
 	</div>
 
 	<!-- Tags-->
 	<div class="flex gap-2 mb-8 flex-wrap">
-	<span
-		v-for="tag in article.tags"
-		:key="tag.id"
-		class="px-3 py-1 text-sm rounded-full bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-300"
-	>
-		#{{ tag.name }}
-	</span>
+		<Link
+			v-for="tag in article.tags"
+			:key="tag.id"
+			:href="route('blog.tags.show', tag.slug)"
+			class="px-3 py-1 text-sm rounded-full bg-blue-100 dark:bg-blue-900 
+				text-blue-700 dark:text-blue-300 hover:bg-blue-200 dark:hover:bg-blue-800
+				transition"
+		>
+			#{{ tag.name }}
+		</Link>
 	</div>
 
       <!-- Footer actions -->
