@@ -2,29 +2,30 @@
 import { useForm, Link } from '@inertiajs/vue3'
 import ConfirmModal from '@/Components/ConfirmModal.vue'
 import AppLayout from '@/Layouts/AppLayout.vue'
+import TagInput from '@/Components/TagInput.vue'
 import { ref } from 'vue'
 
 const props = defineProps({
-  article: {
-    type: Object,
-    required: true,
-  },
+  article: Object,
   categories: Array,
   tags: Array,
 })
+
+// tags existants → tableau de noms
+const initialTags = props.article.tags?.map(t => t.name) ?? []
 
 const form = useForm({
   title: props.article.title,
   content: props.article.content,
   category_id: props.article.category_id,
-  tags: props.article.tags?.map(t => t.id) ?? [],
+  tags: [...initialTags],        // noms, pas IDs
 })
 
 const submit = () => {
-  form.patch(route('blog.articles.update', props.article.id))
+  form.patch(route('blog.articles.update', props.article.slug))
 }
 
-// gestion de la modale
+// modale
 const showDeleteModal = ref(false)
 const confirmDelete = () => {
   form.delete(route('blog.articles.destroy', props.article.id))
@@ -33,7 +34,7 @@ const confirmDelete = () => {
 </script>
 
 <template>
-  <AppLayout>
+<AppLayout>
   <div class="max-w-3xl mx-auto p-6">
     <h1 class="text-3xl font-bold mb-6">Modifier l'article</h1>
 
@@ -65,39 +66,30 @@ const confirmDelete = () => {
         </div>
       </div>
 
-	  
-        <!-- Catégorie -->
-        <div>
-          <label class="block font-medium mb-1">Catégorie</label>
-          <select v-model="form.category_id"
-                  class="border rounded p-2 w-full">
-            <option :value="null">Aucune catégorie</option>
-            <option v-for="cat in categories" :key="cat.id" :value="cat.id">
-              {{ cat.name }}
-            </option>
-          </select>
+      <!-- Catégorie -->
+      <div>
+        <label class="block font-medium mb-1">Catégorie</label>
+        <select v-model="form.category_id" class="border rounded p-2 w-full">
+          <option :value="null">Aucune catégorie</option>
+          <option v-for="cat in categories" :key="cat.id" :value="cat.id">
+            {{ cat.name }}
+          </option>
+        </select>
+      </div>
+
+      <!-- TAGS (TagInput comme Create.vue) -->
+      <div>
+        <label class="block font-medium mb-1">Tags</label>
+        <TagInput v-model="form.tags" :existing-tags="tags" />
+        <div v-if="form.errors.tags" class="text-red-500 text-sm mt-1">
+          {{ form.errors.tags }}
         </div>
-
-        <!-- Tags -->
-        <div>
-          <label class="block font-medium mb-2">Tags</label>
-
-          <div class="flex flex-wrap gap-3 mt-2">
-            <label v-for="tag in tags" :key="tag.id"
-                   class="flex items-center gap-2 px-3 py-1 rounded-full border
-                          cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700">
-              <input type="checkbox" :value="tag.id" v-model="form.tags" />
-              {{ tag.name }}
-            </label>
-          </div>
-        </div>
-
+      </div>
 
       <div class="flex items-center gap-4">
         <button
           type="submit"
-          class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 disabled:bg-gray-400"
-          :disabled="form.processing"
+          class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
         >
           Mettre à jour
         </button>
@@ -108,23 +100,22 @@ const confirmDelete = () => {
       </div>
     </form>
 
+    <!-- Bouton supprimer -->
+    <button
+      @click="showDeleteModal = true"
+      class="text-red-600 underline hover:text-red-800 mt-6"
+    >
+      Supprimer cet article
+    </button>
+
+    <!-- Modal -->
+    <ConfirmModal
+      :show="showDeleteModal"
+      title="Supprimer l'article"
+      message="Êtes-vous sûr de vouloir supprimer cet article ? Cette action est définitive."
+      @close="showDeleteModal = false"
+      @confirm="confirmDelete"
+    />
   </div>
-    
-  <!-- Bouton supprimer -->
-	<button
-	@click="showDeleteModal = true"
-	class="text-red-600 underline hover:text-red-800"
-	>
-	Supprimer cet article
-	</button>
-	
-  <!-- Modal -->
-  <ConfirmModal
-    :show="showDeleteModal"
-    title="Supprimer l'article"
-    message="Êtes-vous sûr de vouloir supprimer cet article ? Cette action est définitive."
-    @close="showDeleteModal = false"
-    @confirm="confirmDelete"
-  />
-  </AppLayout>
+</AppLayout>
 </template>

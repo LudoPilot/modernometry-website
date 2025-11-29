@@ -1,6 +1,7 @@
 <script setup>
 import AppLayout from '@/Layouts/AppLayout.vue'
 import { useForm, Link } from '@inertiajs/vue3'
+import TagInput from '@/Components/TagInput.vue'
 
 defineProps({
 	categories: Array,
@@ -66,15 +67,11 @@ const submit = () => {
 	  </select>
 	</div>
 
-	<!-- Tags -->
-	<div class="flex flex-wrap gap-3 mt-4">
-		<label v-for="tag in tags" :key="tag.id"
-				class="flex items-center gap-2 px-3 py-1 rounded-full border
-						cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700">
-			<input type="checkbox" :value="tag.id" v-model="form.tags" />
-			{{ tag.name }}
-		</label>
-	</div>
+    <!-- Tags -->
+    <div>
+        <label class="block font-medium mb-1">Tags</label>
+        <TagInput v-model="form.tags" :existing-tags="tags" />
+    </div>
 
       <!-- Boutons -->
       <div class="flex items-center gap-4">

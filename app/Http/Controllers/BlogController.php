@@ -20,7 +20,7 @@ class BlogController extends Controller
 		]);
 	}
 
-    public function create()
+	public function create()
 	{
 		return inertia('Blog/Create', [
 			'categories' => Category::all(),
@@ -28,15 +28,16 @@ class BlogController extends Controller
 		]);
 	}
 
-	public function store(Request $request) {
+	public function store(Request $request)
+	{
 		$validated = $request->validate([
 			'title' => 'required|string|max:255',
 			'content' => 'required|string',
-    		'category_id' => 'nullable|exists:categories,id',
+			'category_id' => 'nullable|exists:categories,id',
 
 			// tags
-    		'tags' => 'array',
-    		'tags.*' => 'string|max:50',
+			'tags' => 'array',
+			'tags.*' => 'string|max:50',
 		]);
 
 		$article = Article::create([
@@ -47,15 +48,15 @@ class BlogController extends Controller
 		]);
 
 		// conversion des tags en IDs
+		$tagIds = []; // ← important
+
 		if (!empty($validated['tags'])) {
 			foreach ($validated['tags'] as $tagName) {
 
-				// nettoie le tag
 				$tagName = trim($tagName);
 
 				if ($tagName === '') continue;
 
-				// création du tag si nécessaire
 				$tag = \App\Models\Tag::firstOrCreate(
 					['slug' => Str::slug($tagName)],
 					['name' => $tagName]
@@ -72,13 +73,19 @@ class BlogController extends Controller
 		return redirect()->route('blog.index')->with('success', 'Article créé avec succès.');
 	}
 
-	public function show(Article $article) {
+	public function show(Article $article)
+	{
+		$article->load('tags'); 
+		
 		return inertia('Blog/Show', [
 			'article' => $article,
 		]);
-	} 
+	}
 
-	public function edit(Article $article) {
+	public function edit(Article $article)
+	{
+		$article->load('tags'); 
+
 		return inertia('Blog/Edit', [
 			'article' => $article,
 			'categories' => Category::all(),
@@ -128,11 +135,11 @@ class BlogController extends Controller
 			->with('success', 'Article mis à jour.');
 	}
 
-    public function destroy(Article $article)
-    {
-        $article->delete();
+	public function destroy(Article $article)
+	{
+		$article->delete();
 
-        return redirect()->route('blog.index')
-            ->with('success', 'Article supprimé.');
-    }
+		return redirect()->route('blog.index')
+			->with('success', 'Article supprimé.');
+	}
 }
