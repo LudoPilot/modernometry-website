@@ -86,27 +86,33 @@ const confirmDelete = () => {
         </div>
       </div>
 
-      <div class="flex items-center gap-4">
-        <button
-          type="submit"
-          class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
-        >
-          Mettre à jour
-        </button>
+      <div class="flex items-center justify-between mt-8">
+		<div class="flex items-center gap-4">
+			<button
+			type="submit"
+			class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+			>
+			Mettre à jour
+			</button>
 
-        <Link :href="route('blog.index')" class="text-gray-700 underline">
-          Annuler
-        </Link>
+			<Link
+			:href="route('blog.index')"
+			class="px-4 py-2 rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-100 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800"
+			>
+			Annuler
+			</Link>
+		</div>
+
+		<!-- Bouton supprimer -->
+		<button
+		@click="showDeleteModal = true"
+		class="px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 shadow-sm"
+		>
+		Supprimer cet article
+		</button>
       </div>
+	  
     </form>
-
-    <!-- Bouton supprimer -->
-    <button
-      @click="showDeleteModal = true"
-      class="text-red-600 underline hover:text-red-800 mt-6"
-    >
-      Supprimer cet article
-    </button>
 
     <!-- Modal -->
     <ConfirmModal
