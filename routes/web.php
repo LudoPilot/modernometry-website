@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Application;
 use App\Http\Controllers\TagController;
 use App\Http\Controllers\BlogController;
+use App\Http\Controllers\ContactController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\TutorialController; 
@@ -79,7 +80,11 @@ Route::prefix('blog')->name('blog.')->group(function () {
 
 // Routes Admin
 Route::prefix('admin')->middleware('auth')->name('admin.')->group(function () {
+	// Dashboard
+	Route::get('/dashboard', [\App\Http\Controllers\Admin\DashboardController::class, 'index'])
+		->name('admin.dashboard');
 
+	// Catégories
     Route::prefix('categories')->name('categories.')->group(function () {
 
         Route::get('/', [\App\Http\Controllers\Admin\CategoryAdminController::class, 'index'])
@@ -100,7 +105,6 @@ Route::prefix('admin')->middleware('auth')->name('admin.')->group(function () {
         Route::delete('/{category}', [\App\Http\Controllers\Admin\CategoryAdminController::class, 'destroy'])
             ->name('destroy');
     });
-
 });
 
 
