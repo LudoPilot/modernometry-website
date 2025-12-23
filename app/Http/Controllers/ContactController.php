@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Mail\ContactFormMail;
 use Illuminate\Support\Facades\Mail;
 
 class ContactController extends Controller
@@ -29,13 +30,11 @@ class ContactController extends Controller
         }
 
         // Envoi d'email (exemple simple)
-        Mail::raw(
-            "Message envoyé par : {$validated['firstname']} {$validated['lastname']}\nEmail : {$validated['email']}\n\n{$validated['message']}",
-            fn ($mail) => $mail
-                ->to('contact@modernometry.com')
-                ->subject('Nouveau message depuis le formulaire de contact')
-        );
+		Mail::to('ton-adresse@contact.com')
+			->send(new ContactFormMail($validated));
 
-        return back()->with('success', 'Votre message a bien été envoyé !');
+		return redirect()
+			->route('contact.index')
+			->with('success', 'Votre message a bien été envoyé !');
     }
 }

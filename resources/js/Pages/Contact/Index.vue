@@ -10,7 +10,9 @@ const form = useForm({
 })
 
 const submit = () => {
-    form.post(route('contact.send'))
+    form.post(route('contact.send'), {
+		onSuccess: () => form.reset(),
+	})
 }
 </script>
 

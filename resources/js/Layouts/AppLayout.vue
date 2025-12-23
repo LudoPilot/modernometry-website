@@ -1,7 +1,7 @@
 <script setup>
 import { Link, usePage } from '@inertiajs/vue3'
 import ToggleDarkMode from '@/Components/ToggleDarkMode.vue'
-import { ref, watch, onMounted } from 'vue'
+import { ref, watch, onMounted, computed } from 'vue'
 
 // Heroicons
 import { Bars3Icon, XMarkIcon, UserCircleIcon, ChevronDownIcon, SunIcon, MoonIcon } from '@heroicons/vue/24/outline'
@@ -53,6 +53,19 @@ onMounted(() => {
     }
   })
 })
+
+
+// Message flash de succès
+const flashSuccess = computed(() => page.props.flash?.success)
+
+watch(
+  () => page.props.flash,
+  (flash) => {
+    console.log('FLASH:', flash)
+  },
+  { immediate: true }
+)
+
 </script>
 
 <template>
@@ -186,6 +199,13 @@ onMounted(() => {
     </nav>
 
     <!-- CONTENU PRINCIPAL-->
+	 <div
+		v-if="flashSuccess"
+		class="mb-4 px-4 py-2 bg-green-600 text-black rounded-lg shadow"
+		>
+		{{ flashSuccess }}
+	</div>
+
     <main class="flex-1 py-8">
       <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         <slot />
