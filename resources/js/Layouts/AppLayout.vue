@@ -1,13 +1,17 @@
 <script setup>
-import { Link, usePage } from '@inertiajs/vue3'
+import { Link, usePage, router } from '@inertiajs/vue3'
 import ToggleDarkMode from '@/Components/ToggleDarkMode.vue'
-import { ref, watch, onMounted, computed } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 
 // Heroicons
 import { Bars3Icon, XMarkIcon, UserCircleIcon, ChevronDownIcon, SunIcon, MoonIcon } from '@heroicons/vue/24/outline'
 
+// Inertia page props
+const page = usePage()
+
 // Light mode / dark mode
 const theme = ref('light')
+
 const loadTheme = () => {
   const saved = localStorage.getItem('theme')
 
@@ -28,9 +32,6 @@ const toggleTheme = () => {
 
 onMounted(() => loadTheme())
 
-
-const page = usePage()
-
 // Menu mobile
 const mobileOpen = ref(false)
 const toggleMobileMenu = () => (mobileOpen.value = !mobileOpen.value)
@@ -42,31 +43,53 @@ const toggleUserMenu = () => {
   userMenuOpen.value = !userMenuOpen.value
 }
 
-// Ferme le dropdown en cliquant ailleurs
-onMounted(() => {
-  window.addEventListener('click', e => {
-    const dropdown = document.getElementById('user-dropdown')
-    const button = document.getElementById('user-menu-button')
 
-    if (dropdown && !dropdown.contains(e.target) && !button.contains(e.target)) {
-      userMenuOpen.value = false
-    }
-  })
+// fermeture du dropdown
+const onWindowClick = (e) => {
+  const dropdown = document.getElementById('user-dropdown')
+  const button = document.getElementById('user-menu-button')
+
+  if (!button) return
+
+  if (dropdown && !dropdown.contains(e.target) && !button.contains(e.target)) {
+    userMenuOpen.value = false
+  }
+}
+
+onMounted(() => {
+  window.addEventListener('click', onWindowClick)
 })
 
+onUnmounted(() => {
+  window.removeEventListener('click', onWindowClick)
+})
 
-// Message flash de succès
-const flashSuccess = computed(() => page.props.flash?.success)
+// gestion des messages flash (toasts)
+const toast = ref(null)
+let toastTimer = null
 
-watch(
-  () => page.props.flash,
-  (flash) => {
-    console.log('FLASH:', flash)
-  },
-  { immediate: true }
-)
+const showToast = (msg) => {
+  toast.value = msg
 
+  if (toastTimer) clearTimeout(toastTimer)
+  toastTimer = setTimeout(() => (toast.value = null), 3000)
+}
+
+onUnmounted(() => {
+  if (toastTimer) clearTimeout(toastTimer)
+})
+
+// flash via inertia:success 
+const onSuccess = (event) => {
+  const message = event.detail?.page?.flash?.message
+  if (message) showToast(message)
+}
+
+onMounted(() => document.addEventListener('inertia:success', onSuccess))
+onUnmounted(() => document.removeEventListener('inertia:success', onSuccess))
 </script>
+
+
 
 <template>
   <div class="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200">
@@ -199,11 +222,11 @@ watch(
     </nav>
 
     <!-- CONTENU PRINCIPAL-->
-	 <div
-		v-if="flashSuccess"
-		class="mb-4 px-4 py-2 bg-green-600 text-black rounded-lg shadow"
-		>
-		{{ flashSuccess }}
+	<div
+		v-if="toast"
+		class="mb-4 px-4 py-2 bg-green-600 text-white shadow"
+	>
+		{{ toast }}
 	</div>
 
     <main class="flex-1 py-8">

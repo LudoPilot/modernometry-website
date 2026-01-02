@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Inertia\Inertia;
 use Illuminate\Http\Request;
 use App\Mail\ContactFormMail;
 use Illuminate\Support\Facades\Mail;
@@ -10,7 +11,7 @@ class ContactController extends Controller
 {
     public function index()
     {
-        return inertia('Contact/Index');
+        return Inertia('Contact/Index');
     }
 
     public function send(Request $request)
@@ -33,8 +34,8 @@ class ContactController extends Controller
 		Mail::to('ton-adresse@contact.com')
 			->send(new ContactFormMail($validated));
 
-		return redirect()
-			->route('contact.index')
-			->with('success', 'Votre message a bien été envoyé !');
+    	Inertia::flash('message', 'Message envoyé');
+
+		return back();		
     }
 }

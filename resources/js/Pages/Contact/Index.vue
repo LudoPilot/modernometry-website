@@ -1,6 +1,6 @@
 <script setup>
 import AppLayout from '@/Layouts/AppLayout.vue'
-import { Head, useForm } from '@inertiajs/vue3'
+import { Head, useForm, usePage } from '@inertiajs/vue3'
 
 const form = useForm({
     firstname: '',
@@ -10,10 +10,12 @@ const form = useForm({
 })
 
 const submit = () => {
-    form.post(route('contact.send'), {
-		onSuccess: () => form.reset(),
-	})
+  form.post(route('contact.send'), {
+    onSuccess: () => form.reset(),
+  })
 }
+
+
 </script>
 
 <template>
