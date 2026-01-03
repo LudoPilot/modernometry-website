@@ -24,26 +24,6 @@ defineProps({
       />
     </div>
 
-    <!-- <ul>
-      <li v-for="article in articles" :key="article.id" class="mb-4">
-        <h2 class="text-xl font-semibold">
-          {{ article.title }}
-        </h2>
-
-		<p>TEST</p>
-
-        <p class="text-gray-600">
-          {{ article.content.substring(0, 120) }}…
-        </p>
-
-        <Link
-          :href="route('blog.articles.show', article.slug)"
-          class="text-blue-500 underline"
-        >
-          Lire l'article
-        </Link>
-      </li>
-    </ul> -->
   </div>
   </AppLayout>
 </template>
