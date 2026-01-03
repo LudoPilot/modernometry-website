@@ -1,9 +1,24 @@
 <script setup>
 import { Link } from '@inertiajs/vue3'
 import AppLayout from '@/Layouts/AppLayout.vue'
+import ArticleCard from '@/Components/ArticleCard.vue'
+
+
+defineProps({
+	latestArticles: {
+		type: Array,
+		default: () => []
+	}
+})
 </script>
 
 <template>
+	<Head title="Le développement web expliqué">
+		<meta name="description"
+			content="Articles et tutoriels pour apprendre simplement le développement web moderne" />
+	</Head>
+
+
 	<AppLayout>
 
 		<!-- HERO -->
@@ -62,6 +77,40 @@ import AppLayout from '@/Layouts/AppLayout.vue'
 					</p>
 				</div>
 			</div>
+		</section>
+
+		<!-- Derniers articles-->
+		<section class="mb-20">
+		<div class="flex items-center justify-between mb-6">
+			<h2 class="text-2xl font-bold">
+			Derniers articles
+			</h2>
+
+			<Link
+			:href="route('blog.index')"
+			class="text-sm text-blue-600 hover:underline"
+			>
+			Voir tous les articles →
+			</Link>
+		</div>
+
+		<div
+			v-if="latestArticles.length"
+			class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+		>
+			<ArticleCard
+			v-for="article in latestArticles"
+			:key="article.id"
+			:article="article"
+			/>
+		</div>
+
+		<p
+			v-else
+			class="text-gray-500 text-sm"
+		>
+			Aucun article pour le moment.
+		</p>
 		</section>
 
 	</AppLayout>

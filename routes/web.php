@@ -8,6 +8,7 @@ use App\Http\Controllers\BlogController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\HomepageController;
 use App\Http\Controllers\TutorialController; 
 
 /*
@@ -21,14 +22,8 @@ use App\Http\Controllers\TutorialController;
 |
 */
 
-Route::get('/', function () {
-    return Inertia::render('Welcome', [
-        'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
-        'laravelVersion' => Application::VERSION,
-        'phpVersion' => PHP_VERSION,
-    ]);
-});
+Route::get('/', [HomepageController::class, 'index'])
+    ->name('home');
 
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
