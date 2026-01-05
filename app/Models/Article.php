@@ -2,9 +2,10 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Article extends Model
 {
@@ -15,6 +16,7 @@ class Article extends Model
 		'content',
 		'user_id',
 		'category_id',
+		'type',
 	];
 
 	public function setTitleAttribute($value)
@@ -32,6 +34,23 @@ class Article extends Model
 
 		$this->attributes['slug'] = $slug;
 	}
+
+	// types d'articles
+    public function scopePublished(Builder $query)
+    {
+        return $query->whereNotNull('published_at');
+    }
+
+	public function scopeBlog($query)
+	{
+		return $query->where('type', 'blog');
+	}
+
+	public function scopeTutorial($query)
+	{
+		return $query->where('type', 'tutorial');
+	}
+	
 
 	// récupérer le slug
 	public function getRouteKeyName()

@@ -12,8 +12,8 @@ class BlogController extends Controller
 {
 	public function index()
 	{
-		$articles = Article::all();
-		//$articles = Article::latest()->get();
+
+		$articles = Article::blog()->published()->latest()->get();
 
 		return inertia('Blog/Index', [
 			'articles' => $articles,
@@ -45,6 +45,7 @@ class BlogController extends Controller
 			'content' => $validated['content'],
 			'category_id' => $validated['category_id'] ?? null,
 			'user_id' => auth()->id(),
+			'type' => 'blog',
 		]);
 
 		// conversion des tags en IDs
@@ -75,6 +76,10 @@ class BlogController extends Controller
 
 	public function show(Article $article)
 	{
+		if ($article->type !== 'blog') {
+			abort(404);
+		}
+
 		$article->load('tags'); 
 		
 		return inertia('Blog/Show', [
@@ -84,6 +89,9 @@ class BlogController extends Controller
 
 	public function edit(Article $article)
 	{
+		if ($article->type !== 'blog') {
+			abort(404);
+		}
 		$article->load('tags'); 
 
 		return inertia('Blog/Edit', [
@@ -95,6 +103,10 @@ class BlogController extends Controller
 
 	public function update(Request $request, Article $article)
 	{
+		if ($article->type !== 'blog') {
+			abort(404);
+		}
+
 		$validated = $request->validate([
 			'title' => 'required|string|max:255',
 			'content' => 'required|string',
@@ -137,6 +149,10 @@ class BlogController extends Controller
 
 	public function destroy(Article $article)
 	{
+		if ($article->type !== 'blog') {
+			abort(404);
+		}
+		
 		$article->delete();
 
 		return redirect()->route('blog.index')

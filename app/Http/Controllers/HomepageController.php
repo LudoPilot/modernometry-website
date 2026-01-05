@@ -14,7 +14,8 @@ class HomepageController extends Controller
     	return Inertia::render('Welcome', [
 			'canLogin' => Route::has('login'),
             'canRegister' => Route::has('register'),
-			'latestArticles' => Article::query()->latest()->take(3)->get()
+			'latestBlogArticles' => Article::blog()->latest()->take(4)->get(),
+			'latestTutorials'    => Article::tutorial()->latest()->take(4)->get(),
 		]);
 	}
 }

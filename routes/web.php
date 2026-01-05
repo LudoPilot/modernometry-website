@@ -35,13 +35,36 @@ Route::middleware([])->group(function () {	// Route::middleware('auth')->group(f
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-// Autres routes (modifier pour avoir une structure Inertia)
-//Route::get('/', [HomepageController::class, 'index'])->name('homepage.index');
 
-Route::get('/tutorials', [TutorialController::class, 'index'])->name('tutorials.index');
-Route::get('/tutorials/{id}', [TutorialController::class, 'show'])->name('tutorials.show');
-Route::get('/tutorials/{id}/edit', [TutorialController::class, 'edit'])->name('tutorials.edit'); // rendre cette route privée plus tard
-Route::delete('/tutorials/{id}/delete', [TutorialController::class, 'destroy'])->name('tutorials.destroy'); // rendre cette route privée plus tard
+// Routes pour Tutoriels
+Route::prefix('tutorials')->name('tutorials.')->group(function () {
+
+    // liste
+    Route::get('/', [TutorialController::class, 'index'])
+        ->name('index');
+
+    // CRUD tutoriels --> mettre des protections plus tard
+    Route::middleware('auth')->group(function () {
+        Route::get('/create', [TutorialController::class, 'create'])
+            ->name('create');
+
+        Route::post('/', [TutorialController::class, 'store'])
+            ->name('store');
+
+        Route::get('/{article:slug}/edit', [TutorialController::class, 'edit'])
+            ->name('edit');
+
+        Route::patch('/{article:slug}', [TutorialController::class, 'update'])
+            ->name('update');
+
+        Route::delete('/{article:slug}', [TutorialController::class, 'destroy'])
+            ->name('destroy');
+    });
+
+    // affichage
+    Route::get('/{article:slug}', [TutorialController::class, 'show'])
+        ->name('show');
+});
 
 
 // Routes blog
