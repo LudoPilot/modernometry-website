@@ -20,7 +20,7 @@ class DashboardController extends Controller
                 'tags'       => Tag::count(),
                 'users'      => User::count(),
             ],
-            'latestArticles' => Article::latest()->take(5)->get(['id', 'title', 'slug', 'created_at']),
+            'latestArticles' => Article::latest()->take(5)->get(),
         ]);
     }
 }
