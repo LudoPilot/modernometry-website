@@ -17,6 +17,7 @@ class Article extends Model
 		'user_id',
 		'category_id',
 		'type',
+		'published_at',
 	];
 
 	public function setTitleAttribute($value)
@@ -33,6 +34,26 @@ class Article extends Model
 		}
 
 		$this->attributes['slug'] = $slug;
+	}
+
+	// statut de l'article
+	public function isPublished(): bool
+	{
+		return !is_null($this->published_at);
+	}
+
+	public function publish(): void
+	{
+		$this->update([
+			'published_at' => now(),
+		]);
+	}
+
+	public function unpublish(): void
+	{
+		$this->update([
+			'published_at' => null,
+		]);
 	}
 
 	// types d'articles
