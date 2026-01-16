@@ -13,7 +13,7 @@ class BlogController extends Controller
 	public function index()
 	{
 
-		$articles = Article::blog()->published()->latest()->get();
+		$articles = Article::blog()->published()->latest('published_at')->get();
 
 		return inertia('Blog/Index', [
 			'articles' => $articles,
@@ -157,5 +157,27 @@ class BlogController extends Controller
 
 		return redirect()->route('blog.index')
 			->with('success', 'Article supprimé.');
+	}
+
+	public function publish(Article $article)
+	{
+		if ($article->type !== 'blog') {
+			abort(404);
+		}
+
+		$article->publish();
+
+		return back(303)->with('success', 'Article publié.');
+	}
+
+	public function unpublish(Article $article)
+	{
+		if ($article->type !== 'blog') {
+			abort(404);
+		}
+
+		$article->unpublish();
+
+		return back(303)->with('success', 'Article dépublié.');
 	}
 }

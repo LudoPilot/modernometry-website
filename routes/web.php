@@ -59,6 +59,12 @@ Route::prefix('tutorials')->name('tutorials.')->group(function () {
 
         Route::delete('/{article:slug}', [TutorialController::class, 'destroy'])
             ->name('destroy');
+
+		// Publier/dépublier un article | TODO : protéger ces routes plus tard + faire version CRUD Admin
+		Route::patch('/{article:slug}/publish', [BlogController::class, 'publish'])
+			->name('articles.publish');
+		Route::patch('/{article:slug}/unpublish', [BlogController::class, 'unpublish'])
+			->name('articles.unpublish');
     });
 
     // affichage
@@ -89,6 +95,10 @@ Route::prefix('blog')->name('blog.')->group(function () {
         Route::get('/{article:slug}/edit', [BlogController::class, 'edit'])->name('articles.edit');
         Route::patch('/{article:slug}', [BlogController::class, 'update'])->name('articles.update');
         Route::delete('/{article:slug}', [BlogController::class, 'destroy'])->name('articles.destroy');
+
+		// Publier/dépublier un article | TODO : protéger ces routes plus tard + faire version CRUD Admin
+		Route::patch('/{article:slug}/publish', [BlogController::class, 'publish'])->name('articles.publish');
+		Route::patch('/{article:slug}/unpublish', [BlogController::class, 'unpublish'])->name('articles.unpublish');
     });
 
     // Articles

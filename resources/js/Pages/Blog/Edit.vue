@@ -1,5 +1,5 @@
 <script setup>
-import { useForm, Link } from '@inertiajs/vue3'
+import { useForm, Link, router } from '@inertiajs/vue3'
 import ConfirmModal from '@/Components/ConfirmModal.vue'
 import AppLayout from '@/Layouts/AppLayout.vue'
 import TagInput from '@/Components/TagInput.vue'
@@ -31,6 +31,23 @@ const confirmDelete = () => {
   form.delete(route('blog.articles.destroy', props.article.id))
   showDeleteModal.value = false
 }
+
+// Publication/dépublication
+const publish = () => {
+  router.patch(route('blog.articles.publish', props.article.slug))
+}
+
+const unpublish = () => {
+  router.patch(
+    route('blog.articles.unpublish', props.article.slug),
+    {},
+    {
+      preserveScroll: true,
+      preserveState: false,
+    }
+  )
+}
+
 </script>
 
 <template>
@@ -39,6 +56,40 @@ const confirmDelete = () => {
     <h1 class="text-3xl font-bold mb-6">Modifier l'article</h1>
 
     <form @submit.prevent="submit" class="space-y-6">
+	  <!-- Publier / dépublier-->
+		<div class="flex items-center justify-between mb-6">
+		<span
+			v-if="article.published_at"
+			class="inline-block px-3 py-1 text-sm bg-green-100 text-green-700 rounded-full"
+		>
+			Publié
+		</span>
+
+		<span
+			v-else
+			class="inline-block px-3 py-1 text-sm bg-gray-200 text-gray-600 rounded-full"
+		>
+			Brouillon
+		</span>
+
+		<button
+			v-if="!article.published_at"
+			type="button"
+			@click="publish"
+			class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+		>
+			Publier
+		</button>
+
+		<button
+			v-else
+			type="button"
+			@click="unpublish"
+			class="px-4 py-2 bg-yellow-600 text-white rounded hover:bg-yellow-700"
+		>
+			Dépublier
+		</button>
+		</div>
 
       <!-- Titre -->
       <div>
