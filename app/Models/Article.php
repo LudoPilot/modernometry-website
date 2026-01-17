@@ -62,6 +62,11 @@ class Article extends Model
         return $query->whereNotNull('published_at');
     }
 
+	public function scopeDraft(Builder $query)
+	{
+		return $query->whereNull('published_at');
+	}
+
 	public function scopeBlog($query)
 	{
 		return $query->where('type', 'blog');
