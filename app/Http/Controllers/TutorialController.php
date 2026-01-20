@@ -14,7 +14,7 @@ class TutorialController extends Controller
     {
         $tutorials = Article::tutorial()
             ->published()
-            ->latest()
+            ->latest('published_at')
             ->get();
 
         return inertia('Tutorials/Index', [
@@ -75,7 +75,7 @@ class TutorialController extends Controller
 
     public function show(Article $article)
     {
-        if ($article->type !== 'tutorial') {
+        if ($article->type !== 'tutorial' || !$article->isPublished()) {
             abort(404);
         }
 
@@ -86,20 +86,36 @@ class TutorialController extends Controller
         ]);
     }
 
-    public function edit(Article $article)
-    {
-        if ($article->type !== 'tutorial') {
-            abort(404);
-        }
+    // public function edit(Article $article)
+    // {
+    //     if ($article->type !== 'tutorial') {
+    //         abort(404);
+    //     }
 
-        $article->load('tags');
+    //     $article->load('tags');
 
-        return inertia('Tutorials/Edit', [
-            'tutorial' => $article,
-            'categories' => Category::all(),
-            'tags' => Tag::all(),
-        ]);
-    }
+    //     return inertia('Tutorials/Edit', [
+    //         'tutorial' => $article,
+    //         'categories' => Category::all(),
+    //         'tags' => Tag::all(),
+    //     ]);
+    // }
+	
+	public function edit(string $slug)
+	{
+		$tutorial = Article::tutorial()
+			->where('slug', $slug)
+			->firstOrFail();
+
+		$tutorial->load('tags');
+
+		return inertia('Tutorials/Edit', [
+			'tutorial' => $tutorial,
+			'categories' => Category::all(),
+			'tags' => Tag::all(),
+		]);
+	}
+
 
     public function update(Request $request, Article $article)
     {
@@ -156,4 +172,26 @@ class TutorialController extends Controller
             ->route('tutorials.index')
             ->with('success', 'Tutoriel supprimé.');
     }
+
+	public function publish(Article $article)
+	{
+		if ($article->type !== 'tutorial') {
+			abort(404);
+		}
+
+		$article->publish();
+
+		return back(303)->with('success', 'Article publié.');
+	}
+
+	public function unpublish(Article $article)
+	{
+		if ($article->type !== 'tutorial') {
+			abort(404);
+		}
+
+		$article->unpublish();
+
+		return back(303)->with('success', 'Article dépublié.');
+	}
 }

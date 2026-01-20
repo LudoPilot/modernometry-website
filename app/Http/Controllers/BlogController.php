@@ -74,9 +74,11 @@ class BlogController extends Controller
 		return redirect()->route('blog.index')->with('success', 'Article créé avec succès.');
 	}
 
+	// Affichage d'un article (visibilité publique)
 	public function show(Article $article)
 	{
-		if ($article->type !== 'blog') {
+		// TODO: modifier plus tard pour que l'auteur puisse quand même voir les articles
+		if ($article->type !== 'blog' || !$article->isPublished()) {
 			abort(404);
 		}
 
@@ -87,12 +89,27 @@ class BlogController extends Controller
 		]);
 	}
 
-	public function edit(Article $article)
+	// public function edit(Article $article)
+	// {
+	// 	if ($article->type !== 'blog') {
+	// 		abort(404);
+	// 	}
+	// 	$article->load('tags'); 
+
+	// 	return inertia('Blog/Edit', [
+	// 		'article' => $article,
+	// 		'categories' => Category::all(),
+	// 		'tags' => Tag::all(),
+	// 	]);
+	// }
+
+	public function edit(string $slug)
 	{
-		if ($article->type !== 'blog') {
-			abort(404);
-		}
-		$article->load('tags'); 
+		$article = Article::blog()
+			->where('slug', $slug)
+			->firstOrFail();
+
+		$article->load('tags');
 
 		return inertia('Blog/Edit', [
 			'article' => $article,
@@ -100,6 +117,7 @@ class BlogController extends Controller
 			'tags' => Tag::all(),
 		]);
 	}
+
 
 	public function update(Request $request, Article $article)
 	{
