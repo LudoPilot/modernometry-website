@@ -23,20 +23,37 @@ class Article extends Model
 		'published_at',
 	];
 
-	public function setTitleAttribute($value)
+	// à supprimer
+	// public function setTitleAttribute($value)
+	// {
+	// 	$this->attributes['title'] = $value;
+
+	// 	$baseSlug = Str::slug($value);
+	// 	$slug = $baseSlug;
+	// 	$count = 1;
+
+	// 	// vérifie que le slug est unique
+	// 	while (static::where('slug', $slug)->exists()) {
+	// 		$slug = $baseSlug . '-' . $count++;
+	// 	}
+
+	// 	$this->attributes['slug'] = $slug;
+	// }
+
+	// slug généré uniquement à la création de l'article
+	protected static function booted()
 	{
-		$this->attributes['title'] = $value;
+		static::creating(function (Article $article) {
+			$baseSlug = Str::slug($article->title);
+			$slug = $baseSlug;
+			$count = 1;
 
-		$baseSlug = Str::slug($value);
-		$slug = $baseSlug;
-		$count = 1;
+			while (static::where('slug', $slug)->exists()) {
+				$slug = $baseSlug . '-' . $count++;
+			}
 
-		// vérifie que le slug est unique
-		while (static::where('slug', $slug)->exists()) {
-			$slug = $baseSlug . '-' . $count++;
-		}
-
-		$this->attributes['slug'] = $slug;
+			$article->slug = $slug;
+		});
 	}
 
 	// statut de l'article
@@ -59,22 +76,25 @@ class Article extends Model
 		]);
 	}
 
-	// types d'articles
+	// articles publiés
     public function scopePublished(Builder $query)
     {
         return $query->whereNotNull('published_at');
     }
 
+	// brouillons
 	public function scopeDraft(Builder $query)
 	{
 		return $query->whereNull('published_at');
 	}
 
+	// blog
 	public function scopeBlog($query)
 	{
 		return $query->where('type', 'blog');
 	}
 
+	// tutoriels
 	public function scopeTutorial($query)
 	{
 		return $query->where('type', 'tutorial');
