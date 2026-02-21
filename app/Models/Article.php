@@ -23,24 +23,6 @@ class Article extends Model
 		'published_at',
 	];
 
-	// à supprimer
-	// public function setTitleAttribute($value)
-	// {
-	// 	$this->attributes['title'] = $value;
-
-	// 	$baseSlug = Str::slug($value);
-	// 	$slug = $baseSlug;
-	// 	$count = 1;
-
-	// 	// vérifie que le slug est unique
-	// 	while (static::where('slug', $slug)->exists()) {
-	// 		$slug = $baseSlug . '-' . $count++;
-	// 	}
-
-	// 	$this->attributes['slug'] = $slug;
-	// }
-
-	// slug généré uniquement à la création de l'article
 	protected static function booted()
 	{
 		static::creating(function (Article $article) {
@@ -55,6 +37,10 @@ class Article extends Model
 			$article->slug = $slug;
 		});
 	}
+
+	protected $casts = [
+		'published_at' => 'datetime',
+	];
 
 	// statut de l'article
 	public function isPublished(): bool
