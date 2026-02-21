@@ -19,6 +19,7 @@ class ArticleAdminController extends Controller
             ->when($status === 'published', fn ($query) => $query->whereNotNull('published_at'))
             ->when($status === 'draft', fn ($query) => $query->whereNull('published_at'))
             ->when($q !== '', fn ($query) => $query->where('title', 'like', "%{$q}%"))
+			->withTrashed()
             ->latest()
             ->paginate(10)
             ->withQueryString();
