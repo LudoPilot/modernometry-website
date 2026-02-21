@@ -30,7 +30,9 @@ class ArticleAdminController extends Controller
                 'title' => $a->title,
                 'slug' => $a->slug,
                 'type' => $a->type,
-                'published_at' => optional($a->published_at)->toDateTimeString(),
+                // 'published_at' => optional($a->published_at)->toDateTimeString(),
+				'published_at' => $a->published_at ? (string) $a->published_at : null,
+				'deleted_at' => $a->deleted_at ? (string) $a->deleted_at : null,
                 'created_at' => optional($a->created_at)->format('d/m/Y'),
             ];
         });

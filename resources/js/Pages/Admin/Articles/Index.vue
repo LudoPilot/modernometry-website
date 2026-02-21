@@ -128,19 +128,40 @@ const applyFilters = (overrides = {}) => {
 							</td>
 
 							<td class="px-6 py-4 text-right space-x-2">
-								<button v-if="!a.published_at" @click="publish(a.slug)"
-									class="px-3 py-1.5 rounded-lg bg-black text-white hover:opacity-90">
-									Publier
-								</button>
-								<button v-else @click="unpublish(a.slug)"
-									class="px-3 py-1.5 rounded-lg bg-gray-200 text-gray-900 hover:opacity-90 dark:bg-gray-700 dark:text-white">
-									Dépublier
-								</button>
+								<!-- cas où l'article est soft deleted -->
+								<template v-if="a.deleted_at">
+									<span
+									class="inline-flex items-center px-2 py-1 rounded-full text-xs bg-red-100 text-red-800"
+									>
+									Supprimé
+									</span>
+								</template>
 
-								<Link :href="route('admin.articles.edit', a.slug)"
-									class="px-3 py-1.5 rounded-lg border border-gray-300 hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-900">
+								<!-- autres cas -->
+								<template v-else>
+									<button
+									v-if="!a.published_at"
+									@click="publish(a.slug)"
+									class="px-3 py-1.5 rounded-lg bg-black text-white hover:opacity-90"
+									>
+									Publier
+									</button>
+
+									<button
+									v-else
+									@click="unpublish(a.slug)"
+									class="px-3 py-1.5 rounded-lg bg-gray-200 text-gray-900 hover:opacity-90"
+									>
+									Dépublier
+									</button>
+
+									<Link
+									:href="route('admin.articles.edit', a.slug)"
+									class="px-3 py-1.5 rounded-lg border border-gray-300 hover:bg-gray-50"
+									>
 									Éditer
-								</Link>
+									</Link>
+								</template>
 							</td>
 						</tr>
 
