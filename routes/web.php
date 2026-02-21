@@ -110,7 +110,7 @@ Route::prefix('blog')->name('blog.')->group(function () {
 Route::prefix('admin')->middleware('auth')->name('admin.')->group(function () {
 	// Dashboard
 	Route::get('/dashboard', [\App\Http\Controllers\Admin\DashboardController::class, 'index'])
-		->name('admin.dashboard');
+		->name('dashboard');
 
 	// Catégories
     Route::prefix('categories')->name('categories.')->group(function () {
@@ -133,6 +133,34 @@ Route::prefix('admin')->middleware('auth')->name('admin.')->group(function () {
         Route::delete('/{category}', [\App\Http\Controllers\Admin\CategoryAdminController::class, 'destroy'])
             ->name('destroy');
     });
+
+	// Articles
+	Route::prefix('articles')->name('articles.')->group(function () {
+		Route::get('/', [\App\Http\Controllers\Admin\ArticleAdminController::class, 'index'])
+			->name('index');
+
+		Route::get('/create', [\App\Http\Controllers\Admin\ArticleAdminController::class, 'create'])
+			->name('create');
+
+		Route::post('/', [\App\Http\Controllers\Admin\ArticleAdminController::class, 'store'])
+			->name('store');
+
+		Route::get('/{article:slug}/edit', [\App\Http\Controllers\Admin\ArticleAdminController::class, 'edit'])
+			->name('edit');
+
+		Route::patch('/{article:slug}', [\App\Http\Controllers\Admin\ArticleAdminController::class, 'update'])
+			->name('update');
+
+		Route::delete('/{article:slug}', [\App\Http\Controllers\Admin\ArticleAdminController::class, 'destroy'])
+			->name('destroy');
+
+		Route::patch('/{article:slug}/publish', [\App\Http\Controllers\Admin\ArticleAdminController::class, 'publish'])
+			->name('publish');
+
+		Route::patch('/{article:slug}/unpublish', [\App\Http\Controllers\Admin\ArticleAdminController::class, 'unpublish'])
+			->name('unpublish');
+	});
+
 });
 
 
