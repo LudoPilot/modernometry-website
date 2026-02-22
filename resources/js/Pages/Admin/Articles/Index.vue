@@ -30,6 +30,32 @@ const unpublish = (slug) => {
   )
 }
 
+const softDelete = (slug) => {
+  if (!confirm('Mettre cet article à la corbeille ?')) return
+
+  router.delete(route('admin.articles.destroy', slug), {
+    preserveScroll: true,
+    preserveState: false,
+  })
+}
+
+const restore = (slug) => {
+  router.patch(
+    route('admin.articles.restore', slug),
+    {},
+    { preserveScroll: true, preserveState: false }
+  )
+}
+
+const forceDelete = (slug) => {
+  if (!confirm('Supprimer définitivement ? Cette action est irréversible.')) return
+
+  router.delete(route('admin.articles.force-delete', slug), {
+    preserveScroll: true,
+    preserveState: false,
+  })
+}
+
 const applyFilters = (overrides = {}) => {
 	router.get(
 		route('admin.articles.index'),
@@ -130,37 +156,58 @@ const applyFilters = (overrides = {}) => {
 							<td class="px-6 py-4 text-right space-x-2">
 								<!-- cas où l'article est soft deleted -->
 								<template v-if="a.deleted_at">
-									<span
+								<span
 									class="inline-flex items-center px-2 py-1 rounded-full text-xs bg-red-100 text-red-800"
-									>
+								>
 									Supprimé
-									</span>
-								</template>
+								</span>
+
+								<button
+									@click="restore(a.slug)"
+									class="px-3 py-1.5 rounded-lg bg-green-600 text-white hover:opacity-90"
+								>
+									Restaurer
+								</button>
+
+								<button
+									@click="forceDelete(a.slug)"
+									class="px-3 py-1.5 rounded-lg bg-red-600 text-white hover:opacity-90"
+								>
+									Supprimer
+								</button>
+								</template>								
 
 								<!-- autres cas -->
 								<template v-else>
 									<button
-									v-if="!a.published_at"
-									@click="publish(a.slug)"
-									class="px-3 py-1.5 rounded-lg bg-black text-white hover:opacity-90"
-									>
-									Publier
+										v-if="!a.published_at"
+										@click="publish(a.slug)"
+										class="px-3 py-1.5 rounded-lg bg-black text-white hover:opacity-90"
+										>
+										Publier
 									</button>
 
 									<button
-									v-else
-									@click="unpublish(a.slug)"
-									class="px-3 py-1.5 rounded-lg bg-gray-200 text-gray-900 hover:opacity-90"
-									>
-									Dépublier
+										v-else
+										@click="unpublish(a.slug)"
+										class="px-3 py-1.5 rounded-lg bg-gray-200 text-gray-900 hover:opacity-90"
+										>
+										Dépublier
 									</button>
 
 									<Link
-									:href="route('admin.articles.edit', a.slug)"
-									class="px-3 py-1.5 rounded-lg border border-gray-300 hover:bg-gray-50"
-									>
-									Éditer
+										:href="route('admin.articles.edit', a.slug)"
+										class="px-3 py-1.5 rounded-lg border border-gray-300 hover:bg-gray-50"
+										>
+										Éditer
 									</Link>
+
+									<button
+										@click="softDelete(a.slug)"
+										class="px-3 py-1.5 rounded-lg bg-red-600 text-white hover:opacity-90"
+										>
+										Supprimer
+									</button>
 								</template>
 							</td>
 						</tr>

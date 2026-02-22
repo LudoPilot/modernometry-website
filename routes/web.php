@@ -159,6 +159,12 @@ Route::prefix('admin')->middleware('auth')->name('admin.')->group(function () {
 
 		Route::patch('/{article:slug}/unpublish', [\App\Http\Controllers\Admin\ArticleAdminController::class, 'unpublish'])
 			->name('unpublish');
+
+		Route::patch('/{article:slug}/restore', [\App\Http\Controllers\Admin\ArticleAdminController::class, 'restore'])
+			->name('restore');
+
+		Route::delete('/{article:slug}/force-delete', [\App\Http\Controllers\Admin\ArticleAdminController::class, 'forceDelete'])
+			->name('force-delete');			
 	});
 
 });

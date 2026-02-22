@@ -98,8 +98,29 @@ class ArticleAdminController extends Controller
     {
         $article->delete();
 
-        return redirect()->route('admin.articles.index');
+		return back()->with('success', 'Article mis à la corbeille.');
     }
+
+	public function restore(string $slug)
+	{
+		$article = Article::withTrashed()->where('slug', $slug)->firstOrFail();
+
+		// $article->unpublish();
+
+		$article->restore();
+
+		return back()->with('success', 'Article restauré.');
+	}
+
+	public function forceDelete(string $slug)
+	{
+		$article = Article::withTrashed()->where('slug', $slug)->firstOrFail();
+
+		$article->tags()->detach();
+		$article->forceDelete();
+
+		return back()->with('success', 'Article supprimé définitivement.');
+	}	
 
 	// PAS DE DISTINCTION ENTRE ARTICLES DE BLOG ET TUTORIELS POUR LE MOMENT ICI
 
