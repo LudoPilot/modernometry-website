@@ -7,10 +7,11 @@ const form = useForm({
 	title: '',
 	type: 'blog',
 	content: '',
+	cover: null,
 })
 
 const submit = () => {
-	form.post(route('admin.articles.store'))
+	form.post(route('admin.articles.store'), { forceFormData: true })
 }
 </script>
 

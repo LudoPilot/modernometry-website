@@ -4,6 +4,8 @@ import ConfirmModal from '@/Components/ConfirmModal.vue'
 import AppLayout from '@/Layouts/AppLayout.vue'
 import TagInput from '@/Components/TagInput.vue'
 import { ref } from 'vue'
+import CoverUploader from '@/Components/CoverUploader.vue'
+import RichTextEditor from '@/Components/RichTextEditor.vue'
 
 const props = defineProps({
   article: Object,
@@ -19,10 +21,11 @@ const form = useForm({
   content: props.article.content,
   category_id: props.article.category_id,
   tags: [...initialTags],        // noms, pas IDs
+  cover: null,
 })
 
 const submit = () => {
-  form.patch(route('blog.articles.update', props.article.slug))
+  form.patch(route('blog.articles.update', props.article.slug), { forceFormData: true })
 }
 
 // modale
@@ -104,14 +107,12 @@ const unpublish = () => {
         </div>
       </div>
 
+	  <!-- Image -->
+	  <CoverUploader v-model="form.cover" :existing-url="article.cover_url" />
       <!-- Contenu -->
       <div>
         <label class="block font-medium mb-1">Contenu</label>
-        <textarea
-          v-model="form.content"
-          rows="10"
-          class="w-full border rounded-lg p-3"
-        ></textarea>
+		<RichTextEditor v-model="form.content" />
         <div v-if="form.errors.content" class="text-red-500 text-sm mt-1">
           {{ form.errors.content }}
         </div>

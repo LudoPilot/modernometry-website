@@ -145,6 +145,9 @@ Route::prefix('admin')->middleware('auth')->name('admin.')->group(function () {
 		Route::post('/', [\App\Http\Controllers\Admin\ArticleAdminController::class, 'store'])
 			->name('store');
 
+		Route::get('/{article:slug}', [\App\Http\Controllers\Admin\ArticleAdminController::class, 'show'])
+		->name('show');
+
 		Route::get('/{article:slug}/edit', [\App\Http\Controllers\Admin\ArticleAdminController::class, 'edit'])
 			->name('edit');
 

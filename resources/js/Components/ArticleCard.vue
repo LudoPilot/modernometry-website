@@ -7,6 +7,11 @@ const props = defineProps({
     required: true
   }
 })
+
+const excerpt = (html, limit = 140) => {
+  const text = (html ?? '').replace(/<[^>]*>/g, '').trim()
+  return text.length > limit ? text.slice(0, limit) + '…' : text
+}
 </script>
 
 <template>
@@ -16,6 +21,14 @@ const props = defineProps({
            bg-white dark:bg-gray-800 hover:shadow-lg dark:hover:shadow-xl
            transition-all duration-200"
   >
+
+	<!-- Image-->
+	<img
+	v-if="article.cover_url"
+	:src="article.cover_url"
+	class="w-full h-44 object-cover rounded-lg mb-4"
+	alt=""
+	/>  
     <!-- Title -->
     <h2 class="text-2xl font-semibold text-gray-900 dark:text-gray-100 mb-2">
       {{ article.title }}
@@ -23,7 +36,7 @@ const props = defineProps({
 
     <!-- Excerpt -->
     <p class="text-gray-600 dark:text-gray-300 mb-3">
-      {{ article.content.substring(0, 140) }}…
+      {{ excerpt(article.content, 140) }}
     </p>
 
 	<!-- Catégorie -->

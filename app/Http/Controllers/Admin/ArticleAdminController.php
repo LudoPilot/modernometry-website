@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Article;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class ArticleAdminController extends Controller
 {
@@ -66,14 +67,44 @@ class ArticleAdminController extends Controller
             'title' => ['required', 'string', 'max:255'],
             'type' => ['required', 'in:blog,tutorial'],
             'content' => ['required', 'string'],
+			'cover' => ['nullable', 'image', 'max:4096']
         ]);
 
         $data['user_id'] = $request->user()->id;
+
+		// cas avec une image de couverture
+		if ($request->hasFile('cover')) {
+			$data['cover_path'] = $request->file('cover')->store('covers', 'public');
+		}
+
+		unset($data['cover']);	// TOOO : voir pour le stockage plus tard
+
 
         $article = Article::create($data);
 
         return redirect()->route('admin.articles.edit', $article->slug);
     }
+
+	public function show(string $slug)
+	{
+		$article = Article::withTrashed()
+			->where('slug', $slug)
+			->firstOrFail();
+
+		return inertia('Admin/Articles/Show', [
+			'article' => [
+				'id' => $article->id,
+				'title' => $article->title,
+				'slug' => $article->slug,
+				'type' => $article->type,
+				'content' => $article->content,
+				'published_at' => $article->published_at ? (string) $article->published_at : null,
+				'deleted_at' => $article->deleted_at ? (string) $article->deleted_at : null,
+				'cover_url' => $article->cover_path ? Storage::url($article->cover_path) : null,
+				'created_at' => optional($article->created_at)->format('d/m/Y'),
+			],
+		]);
+	}
 
     public function edit(Article $article)
     {
@@ -85,6 +116,8 @@ class ArticleAdminController extends Controller
                 'type' => $article->type,
                 'content' => $article->content,
                 'published_at' => optional($article->published_at)->toDateTimeString(),
+				'cover_path' => $article->cover_path,
+				'cover_url' => $article->cover_path ? Storage::url($article->cover_path) : null,
             ],
         ]);
     }
@@ -95,7 +128,18 @@ class ArticleAdminController extends Controller
             'title' => ['required', 'string', 'max:255'],
             'type' => ['required', 'in:blog,tutorial'],
             'content' => ['required', 'string'],
+			'cover' => ['nullable', 'image', 'max:4096']
         ]);
+
+		// si nouvelle image de couverture -> on supprime l'ancienne
+		if ($request->hasFile('cover')) {
+			if ($article->cover_path) {
+				Storage::disk('public')->delete($article->cover_path);
+			}
+			$data['cover_path'] = $request->file('cover')->store('covers', 'public');
+		}
+
+    	unset($data['cover']);
 
         $article->update($data);
 

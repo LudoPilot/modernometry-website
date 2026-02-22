@@ -7,13 +7,31 @@ use App\Models\Article;
 use App\Models\Category;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class BlogController extends Controller
 {
 	public function index()
 	{
 
-		$articles = Article::blog()->published()->latest('published_at')->get();
+		//$articles = Article::blog()->published()->latest('published_at')->get();
+
+		$articles = Article::query()
+			->blog()
+			->published()
+			->with(['category', 'tags'])
+			->latest()
+			->get()
+			->map(fn ($a) => [
+				'id' => $a->id,
+				'title' => $a->title,
+				'slug' => $a->slug,
+				'content' => $a->content,           // on l’améliorera ensuite (excerpt)
+				'created_at' => $a->created_at,
+				'category' => $a->category,
+				'tags' => $a->tags,
+				'cover_url' => $a->cover_path ? Storage::url($a->cover_path) : null,
+			]);
 
 		return inertia('Blog/Index', [
 			'articles' => $articles,
@@ -34,11 +52,17 @@ class BlogController extends Controller
 			'title' => 'required|string|max:255',
 			'content' => 'required|string',
 			'category_id' => 'nullable|exists:categories,id',
+			'cover' => 'nullable|image|max:4096',
 
 			// tags
 			'tags' => 'array',
 			'tags.*' => 'string|max:50',
 		]);
+
+		$coverPath = null;
+		if ($request->hasFile('cover')) {
+			$coverPath = $request->file('cover')->store('covers', 'public');
+		}
 
 		$article = Article::create([
 			'title' => $validated['title'],
@@ -46,6 +70,7 @@ class BlogController extends Controller
 			'category_id' => $validated['category_id'] ?? null,
 			'user_id' => auth()->id(),
 			'type' => 'blog',
+			'cover_path' => $coverPath,
 		]);
 
 		// conversion des tags en IDs
@@ -82,26 +107,23 @@ class BlogController extends Controller
 			abort(404);
 		}
 
-		$article->load('tags'); 
-		
+		// $article->load('tags'); 
+		$article->load(['tags', 'category']);
+
 		return inertia('Blog/Show', [
-			'article' => $article,
+			'article' => [
+				'id' => $article->id,
+				'title' => $article->title,
+				'slug' => $article->slug,
+				'content' => $article->content,
+				'created_at' => $article->created_at, // garde en ISO, ok pour new Date()
+				'published_at' => $article->published_at,
+				'category' => $article->category,
+				'tags' => $article->tags,
+				'cover_url' => $article->cover_path ? Storage::url($article->cover_path) : null,
+			],
 		]);
 	}
-
-	// public function edit(Article $article)
-	// {
-	// 	if ($article->type !== 'blog') {
-	// 		abort(404);
-	// 	}
-	// 	$article->load('tags'); 
-
-	// 	return inertia('Blog/Edit', [
-	// 		'article' => $article,
-	// 		'categories' => Category::all(),
-	// 		'tags' => Tag::all(),
-	// 	]);
-	// }
 
 	public function edit(string $slug)
 	{
@@ -112,7 +134,10 @@ class BlogController extends Controller
 		$article->load('tags');
 
 		return inertia('Blog/Edit', [
-			'article' => $article,
+			'article' => [
+				...$article->toArray(),
+				'cover_url' => $article->cover_path ? Storage::url($article->cover_path) : null,
+			],			
 			'categories' => Category::all(),
 			'tags' => Tag::all(),
 		]);
@@ -129,11 +154,19 @@ class BlogController extends Controller
 			'title' => 'required|string|max:255',
 			'content' => 'required|string',
 			'category_id' => 'nullable|exists:categories,id',
+			'cover' => 'nullable|image|max:4096',
 
 			// liste de noms de tags
 			'tags' => 'array',
 			'tags.*' => 'string|max:50',
 		]);
+
+		if ($request->hasFile('cover')) {
+			if ($article->cover_path) {
+				Storage::disk('public')->delete($article->cover_path);
+			}
+			$article->cover_path = $request->file('cover')->store('covers', 'public');
+		}
 
 		$article->update([
 			'title'       => $validated['title'],

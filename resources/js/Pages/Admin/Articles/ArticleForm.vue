@@ -1,5 +1,7 @@
 <script setup>
 import { computed } from 'vue'
+import CoverUploader from '@/Components/CoverUploader.vue'
+import RichTextEditor from '@/Components/RichTextEditor.vue'
 
 const props = defineProps({
 	form: Object,     // useForm()
@@ -27,10 +29,13 @@ const isEdit = computed(() => !!props.article)
 			<div v-if="form.errors.type" class="text-sm text-red-600 mt-1">{{ form.errors.type }}</div>
 		</div>
 
+		<!-- Image -->
+		<CoverUploader v-model="form.cover" :existing-url="article?.cover_url" />
+		<div v-if="form.errors.cover" class="text-sm text-red-600 mt-1">{{ form.errors.cover }}</div>
+
 		<div>
 			<label class="block text-sm text-gray-600 dark:text-gray-300 mb-1">Contenu</label>
-			<textarea v-model="form.content" rows="12"
-				class="w-full rounded-lg border-gray-300 dark:border-gray-700 dark:bg-gray-900" />
+			<RichTextEditor v-model="form.content" />
 			<div v-if="form.errors.content" class="text-sm text-red-600 mt-1">{{ form.errors.content }}</div>
 		</div>
 

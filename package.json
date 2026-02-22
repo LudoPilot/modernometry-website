@@ -20,6 +20,12 @@
     "dependencies": {
         "@heroicons/vue": "^2.2.0",
         "@inertiajs/core": "^2.3.6",
-        "@tailwindcss/typography": "^0.5.19"
+        "@tailwindcss/typography": "^0.5.19",
+        "@tiptap/extension-image": "^3.20.0",
+        "@tiptap/extension-link": "^3.20.0",
+        "@tiptap/extension-underline": "^3.20.0",
+        "@tiptap/extension-youtube": "^3.20.0",
+        "@tiptap/starter-kit": "^3.20.0",
+        "@tiptap/vue-3": "^3.20.0"
     }
 }

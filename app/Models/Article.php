@@ -2,11 +2,15 @@
 
 namespace App\Models;
 
-use Illuminate\Support\Str;
-use Illuminate\Database\Eloquent\Model;
+use App\Models\Category;
+use App\Models\Tag;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class Article extends Model
 {
@@ -21,6 +25,7 @@ class Article extends Model
 		'category_id',
 		'type',
 		'published_at',
+		'cover_path',
 	];
 
 	protected static function booted()
@@ -93,6 +98,11 @@ class Article extends Model
 		return 'slug';
 	}
 
+	// récupérer l'image de couverture
+	public function coverUrl(): ?string
+	{
+		return $this->cover_path ? \Storage::url($this->cover_path) : null;
+	}
 
 	// RELATIONS
 	public function user()

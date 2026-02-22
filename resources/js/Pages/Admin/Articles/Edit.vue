@@ -11,10 +11,11 @@ const form = useForm({
 	title: props.article.title ?? '',
 	type: props.article.type ?? 'blog',
 	content: props.article.content ?? '',
+	cover: null,
 })
 
 const submit = () => {
-	form.patch(route('admin.articles.update', props.article.slug))
+	form.patch(route('admin.articles.update', props.article.slug), { forceFormData: true })
 }
 
 const publish = () => {

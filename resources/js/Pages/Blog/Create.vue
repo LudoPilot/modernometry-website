@@ -2,6 +2,8 @@
 import AppLayout from '@/Layouts/AppLayout.vue'
 import { useForm, Link } from '@inertiajs/vue3'
 import TagInput from '@/Components/TagInput.vue'
+import CoverUploader from '@/Components/CoverUploader.vue'
+import RichTextEditor from '@/Components/RichTextEditor.vue'
 
 defineProps({
 	categories: Array,
@@ -13,10 +15,11 @@ const form = useForm({
   content: '',
   category_id: null,
   tags: [],
+  cover: null,
 })
 
 const submit = () => {
-  form.post(route('blog.articles.store'))
+  form.post(route('blog.articles.store'), { forceFormData: true })
 }
 </script>
 
@@ -41,15 +44,13 @@ const submit = () => {
         </div>
       </div>
 
+	  <!-- Image de cover -->
+	  <CoverUploader v-model="form.cover" />
+
       <!-- Contenu -->
       <div>
         <label class="block font-medium mb-1">Contenu</label>
-        <textarea
-          v-model="form.content"
-          rows="10"
-          class="w-full border rounded-lg p-3"
-          placeholder="Contenu de l'article"
-        ></textarea>
+		<RichTextEditor v-model="form.content" />
         <div v-if="form.errors.content" class="text-red-500 text-sm mt-1">
           {{ form.errors.content }}
         </div>

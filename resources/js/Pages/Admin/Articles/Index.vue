@@ -200,6 +200,10 @@ const applyFilters = (overrides = {}) => {
 										Dépublier
 									</button>
 
+									<Link :href="route('admin.articles.show', a.slug)" class="px-3 py-1.5 rounded-lg border ...">
+										Voir
+									</Link>
+
 									<Link
 										:href="route('admin.articles.edit', a.slug)"
 										class="px-3 py-1.5 rounded-lg border border-gray-300 hover:bg-gray-50"
