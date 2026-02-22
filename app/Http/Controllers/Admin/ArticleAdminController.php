@@ -96,6 +96,7 @@ class ArticleAdminController extends Controller
 
     public function destroy(Article $article)
     {
+		$article->unpublish();
         $article->delete();
 
 		return back()->with('success', 'Article mis à la corbeille.');
