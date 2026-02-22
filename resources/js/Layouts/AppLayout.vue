@@ -100,7 +100,7 @@ onUnmounted(() => document.removeEventListener('inertia:success', onSuccess))
 				<div class="flex justify-between h-16 items-center">
 
 					<!-- Logo -->
-					<Link :href="route('blog.index')" class="text-xl font-bold">
+					<Link :href="route('home')" class="text-xl font-bold">
 						Modernometry
 					</Link>
 
