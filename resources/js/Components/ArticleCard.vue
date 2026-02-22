@@ -1,5 +1,7 @@
 <script setup>
 import { Link } from '@inertiajs/vue3'
+import CategoryBadge from '@/Components/CategoryBadge.vue'
+import TagBadge from '@/Components/TagBadge.vue'
 
 const props = defineProps({
   article: {

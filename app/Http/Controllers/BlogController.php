@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Tag;
+use App\Http\Controllers\Controller;
 use App\Models\Article;
 use App\Models\Category;
-use Illuminate\Support\Str;
+use App\Models\Tag;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class BlogController extends Controller
 {
@@ -26,7 +27,7 @@ class BlogController extends Controller
 				'id' => $a->id,
 				'title' => $a->title,
 				'slug' => $a->slug,
-				'content' => $a->content,           // on l’améliorera ensuite (excerpt)
+				'content' => $a->content,
 				'created_at' => $a->created_at,
 				'category' => $a->category,
 				'tags' => $a->tags,
@@ -116,7 +117,7 @@ class BlogController extends Controller
 				'title' => $article->title,
 				'slug' => $article->slug,
 				'content' => $article->content,
-				'created_at' => $article->created_at, // garde en ISO, ok pour new Date()
+				'created_at' => $article->created_at,
 				'published_at' => $article->published_at,
 				'category' => $article->category,
 				'tags' => $article->tags,
