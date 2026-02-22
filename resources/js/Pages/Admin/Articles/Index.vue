@@ -99,6 +99,7 @@ const applyFilters = (overrides = {}) => {
 						<option value="all">Tous</option>
 						<option value="published">Publiés</option>
 						<option value="draft">Brouillons</option>
+						<option value="trashed">Supprimés</option>
 					</select>
 				</div>
 
@@ -139,10 +140,20 @@ const applyFilters = (overrides = {}) => {
 							<td class="px-6 py-4 capitalize">{{ a.type }}</td>
 
 							<td class="px-6 py-4">
-								<span v-if="a.published_at"
-									class="inline-flex items-center px-2 py-1 rounded-full text-xs bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-200">
+								<span
+									v-if="a.deleted_at"
+									class="inline-flex items-center px-2 py-1 rounded-full text-xs bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-200"
+								>
+									Supprimé
+								</span>
+
+								<span
+									v-else-if="a.published_at"
+									class="inline-flex items-center px-2 py-1 rounded-full text-xs bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-200"
+								>
 									Publié
 								</span>
+
 								<span v-else
 									class="inline-flex items-center px-2 py-1 rounded-full text-xs bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-200">
 									Brouillon
@@ -156,25 +167,19 @@ const applyFilters = (overrides = {}) => {
 							<td class="px-6 py-4 text-right space-x-2">
 								<!-- cas où l'article est soft deleted -->
 								<template v-if="a.deleted_at">
-								<span
-									class="inline-flex items-center px-2 py-1 rounded-full text-xs bg-red-100 text-red-800"
-								>
-									Supprimé
-								</span>
+									<button
+										@click="restore(a.slug)"
+										class="px-3 py-1.5 rounded-lg bg-green-600 text-white hover:opacity-90"
+									>
+										Restaurer
+									</button>
 
-								<button
-									@click="restore(a.slug)"
-									class="px-3 py-1.5 rounded-lg bg-green-600 text-white hover:opacity-90"
-								>
-									Restaurer
-								</button>
-
-								<button
-									@click="forceDelete(a.slug)"
-									class="px-3 py-1.5 rounded-lg bg-red-600 text-white hover:opacity-90"
-								>
-									Supprimer
-								</button>
+									<button
+										@click="forceDelete(a.slug)"
+										class="px-3 py-1.5 rounded-lg bg-red-600 text-white hover:opacity-90"
+									>
+										Supprimer
+									</button>
 								</template>								
 
 								<!-- autres cas -->

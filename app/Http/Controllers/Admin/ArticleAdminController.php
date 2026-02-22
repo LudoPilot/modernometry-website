@@ -8,44 +8,52 @@ use Illuminate\Http\Request;
 
 class ArticleAdminController extends Controller
 {
-	    public function index(Request $request)
-    {
-        $type = $request->string('type', 'all')->toString();       // all|blog|tutorial
-        $status = $request->string('status', 'all')->toString();   // all|published|draft
-        $q = $request->string('q', '')->toString();
+	public function index(Request $request)
+	{
+		$type = $request->string('type', 'all')->toString();       // all|blog|tutorial
+		$status = $request->string('status', 'all')->toString();   // all|published|draft|trashed
+		$q = $request->string('q', '')->toString();
 
-        $articles = Article::query()
-            ->when($type !== 'all', fn ($query) => $query->where('type', $type))
-            ->when($status === 'published', fn ($query) => $query->whereNotNull('published_at'))
-            ->when($status === 'draft', fn ($query) => $query->whereNull('published_at'))
-            ->when($q !== '', fn ($query) => $query->where('title', 'like', "%{$q}%"))
+		$query = Article::query()
 			->withTrashed()
-            ->latest()
-            ->paginate(10)
-            ->withQueryString();
+			->when($type !== 'all', fn ($query) => $query->where('type', $type))
+			->when($q !== '', fn ($query) => $query->where('title', 'like', "%{$q}%"));
 
-        $articles->through(function ($a) {
-            return [
-                'id' => $a->id,
-                'title' => $a->title,
-                'slug' => $a->slug,
-                'type' => $a->type,
-                // 'published_at' => optional($a->published_at)->toDateTimeString(),
+		// Statut 
+		if ($status === 'trashed') {
+			$query->onlyTrashed();
+		} elseif ($status === 'published') {
+			$query->whereNull('deleted_at')->whereNotNull('published_at');
+		} elseif ($status === 'draft') {
+			$query->whereNull('deleted_at')->whereNull('published_at');
+		}
+
+		$articles = $query
+			->latest()
+			->paginate(10)
+			->withQueryString();
+
+		$articles->through(function ($a) {
+			return [
+				'id' => $a->id,
+				'title' => $a->title,
+				'slug' => $a->slug,
+				'type' => $a->type,
 				'published_at' => $a->published_at ? (string) $a->published_at : null,
 				'deleted_at' => $a->deleted_at ? (string) $a->deleted_at : null,
-                'created_at' => optional($a->created_at)->format('d/m/Y'),
-            ];
-        });
+				'created_at' => optional($a->created_at)->format('d/m/Y'),
+			];
+		});
 
-        return inertia('Admin/Articles/Index', [
-            'articles' => $articles,
-            'filters' => [
-                'type' => $type,
-                'status' => $status,
-                'q' => $q,
-            ],
-        ]);
-    }
+		return inertia('Admin/Articles/Index', [
+			'articles' => $articles,
+			'filters' => [
+				'type' => $type,
+				'status' => $status,
+				'q' => $q,
+			],
+		]);
+	}
 
     public function create()
     {
